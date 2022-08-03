@@ -77,9 +77,21 @@ globalFsDir = options.fs_dir;
 % Add some necessary paths
 addpath(genpath(sprintf('%s/Main_steps', options.w_dir)))                           % Functions for main steps in the workflow
 addpath(genpath(sprintf('%s/Functions', options.w_dir)))                            % Functions
-addpath(genpath(sprintf('%s/Data', options.drive_dir)))                             % Data not related to patients
-addpath(genpath(sprintf('%s/Organize', options.drive_dir)))                         % Tables and variables for organization
-addpath(genpath(sprintf('%s/External', options.w_dir)))                             % External packages
+addpath(genpath(sprintf('%s/Data', options.w_dir)))                                 % Data not related to patients
+addpath(genpath(sprintf('%s/Organize', options.w_dir)))                             % Tables and variables for organization
+addpath(genpath(sprintf('%s/Packages/TDTMatlabSDK/TDTSDK', options.w_dir)))           % Code to load TDT files
+addpath(genpath(sprintf('%s/Packages/chebfun-master/', options.w_dir)))               % For image compression 
+addpath(genpath(sprintf('%s/Packages/iELVis-master/', options.w_dir)))                % For plotting electrodes
+addpath(genpath(sprintf('%s/Packages/Violinplot-Matlab-master/', options.w_dir)))     % For violin plots
+addpath(genpath(sprintf('%s/Packages/CBIG-master', options.w_dir)))                   % Clustering of distance matrices
+
+% Some of Stephans code to handle iEEG data
+addpath(sprintf('%s/Packages/EPIPROC-master/EXTERNALS/eeg_toolbox_v1_3_2/stats', options.w_dir))
+addpath(sprintf('%s/Packages/EPIPROC-master/EXTERNALS/Psychtoolbox', options.w_dir))
+addpath(sprintf('%s/Packages/EPIPROC-master/proc_ecog/channel_handling', options.w_dir))
+addpath(sprintf('%s/Packages/EPIPROC-master/matlab_helpers/admin', options.w_dir))
+addpath(sprintf('%s/Packages/EPIPROC-master/matlab_helpers/text_processing', options.w_dir))
+addpath(sprintf('%s/Packages/EPIPROC-master/EXTERNALS/eeg_toolbox_v1_3_2/events', options.w_dir))
 
 %% List of patients
 options.patients = dir(options.data_dir);

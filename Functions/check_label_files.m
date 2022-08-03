@@ -4,7 +4,10 @@
 function check_label_files(options)
 
     % Output file 
-    out_file = sprintf('%s/Data_consistency/label_files.csv', options.w_dir);
+    out_dir = sprintf('%s/Data_consistency', options.drive_dir);
+    if exist(out_dir, 'dir') == 0, mkdir(out_dir); end
+    
+    out_file = sprintf('%s/label_files.csv', out_dir);
     
     if exist(out_file, 'file') == 0
         
