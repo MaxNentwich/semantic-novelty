@@ -6,7 +6,7 @@
     out_dir = sprintf('%s/saccades_novelty', options.fig_dir);
     if exist(out_dir, 'dir') == 0, mkdir(out_dir), end
     
-    sacc_dir = sprintf('%s/Data/saccade_data', options.w_dir);
+    sacc_dir = sprintf('%s/saccade_data', options.im_data_dir);
     
     file_timing = sprintf('%s/saccade_novelty_timing.png', out_dir);
     

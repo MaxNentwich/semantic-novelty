@@ -1,16 +1,16 @@
 
 function align_present_cmi_ns(options)
 
-    out_file = sprintf('%s/Organize/align_ns_cmi_present.mat', options.w_dir);
+    out_file = sprintf('%s/Organize/align_ns_cmi_present.mat', options.drive_dir);
     
     if exist(out_file, 'file') == 0
 
         % Compute the temporal contrast of the CMI version
-        contr_file = sprintf('%s/Data/present_cmi/temp_contr_the_present_cmi.mat', options.w_dir);
+        contr_file = sprintf('%s/present_cmi/temp_contr_the_present_cmi.mat', options.im_data_dir);
 
         if exist(contr_file, 'file') == 0
 
-            [contrast, fr] = compute_temporal_contrast(sprintf('%s/Data/present_cmi/the_present_child_mind.mp4', options.w_dir));
+            [contrast, fr] = compute_temporal_contrast(sprintf('%s/present_cmi/the_present_child_mind.mp4', options.im_data_dir));
 
             save(contr_file, 'contrast', 'fr')
 
@@ -21,7 +21,7 @@ function align_present_cmi_ns(options)
         contrast_cmi = contrast;
 
         % Load the temporal contrast of the NorthShore version
-        load(sprintf('%s/Data/temporal_contrast.mat', options.w_dir), 'contrast_vid', 'vid_names')
+        load(sprintf('%s/temporal_contrast.mat', options.im_data_dir), 'contrast_vid', 'vid_names')
         idx_vid = cellfun(@(C) contains(C, 'The_Present'), vid_names);
 
         contrast_ns = contrast_vid{idx_vid};

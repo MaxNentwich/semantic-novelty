@@ -14,7 +14,7 @@ function save_saccade_data(options)
 
             %% Create the file name and check if the file is already there
             % Create output directory if necessary            
-            out_dir = sprintf('%s/Data/saccade_data', options.w_dir);            
+            out_dir = sprintf('%s/saccade_data', options.im_data_dir);            
             if exist(out_dir, 'dir') == 0, mkdir(out_dir), end        
 
             %% Check which movie files were recorded for the patient

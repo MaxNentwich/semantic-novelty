@@ -14,7 +14,7 @@ function load_event_boundary_annotations(options)
         %% Load the postion of all scene cuts
         [~, video_name] = fileparts(vid_names{v});
 
-        salience_dir = sprintf('%s/Data/salience_cuts', options.w_dir);
+        salience_dir = sprintf('%s/salience_cuts', options.im_data_dir);
         if exist(salience_dir, 'dir') == 0, mkdir(salience_dir); end
 
         out_file = sprintf('%s/%s_salience_cuts.mat', salience_dir, video_name);
@@ -154,7 +154,7 @@ function load_event_boundary_annotations(options)
         frames = dir(sprintf('%s/%s', options.frame_dir, video_name));
         frames(1:2) = [];
 
-        contr_dir = sprintf('%s/Data/contr_frames', options.w_dir);
+        contr_dir = sprintf('%s/contr_frames', options.im_data_dir);
         if exist(contr_dir, 'dir') == 0, mkdir(contr_dir); end
 
         contr_file = sprintf('%s/temp_contr_%s.mat', contr_dir, video_name);
@@ -217,7 +217,7 @@ function load_event_boundary_annotations(options)
 
         %% Compute changes in low level features across scene cuts
         % Based on Extended Data Table 1 in Zheng et al., 2021
-        feat_dir = sprintf('%s/Data/visual_features_cuts', options.w_dir);
+        feat_dir = sprintf('%s/visual_features_cuts', options.im_data_dir);
         if exist(feat_dir, 'dir') == 0, mkdir(feat_dir); end
 
         feature_high_file = sprintf('%s/%s_high_salience_features.mat', feat_dir, video_name);

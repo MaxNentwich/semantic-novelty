@@ -7,7 +7,7 @@ function extract_temporal_contrast(options)
     mat_col = strcmp(file_names(1,:), 'mat_file');
     vid_col = find(strcmp(file_names(1,:), 'video_file'));
 
-    if exist('./Data/temporal_contrast.mat', 'file') == 0
+    if exist(sprintf('%s/temporal_contrast.mat', options.im_data_dir), 'file') == 0
 
         vid_names = unique(file_names(2:end, vid_col));
 
@@ -77,12 +77,12 @@ function extract_temporal_contrast(options)
         end
 
         % Save contrast data
-        save('./Data/temporal_contrast.mat', 'contrast_vid', 'vid_names')
+        save(sprintf('%s/temporal_contrast.mat', options.im_data_dir), 'contrast_vid', 'vid_names')
 
         clearvars contrast
 
     else
-        load('./Data/temporal_contrast.mat', 'contrast_vid', 'vid_names')
+        load(sprintf('%s/temporal_contrast.mat', options.im_data_dir), 'contrast_vid', 'vid_names')
     end
 
     % Assign the values to the right timestamps based on psychtoolbox timing

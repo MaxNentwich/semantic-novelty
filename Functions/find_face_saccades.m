@@ -3,7 +3,7 @@
 function [saccades_faces, saccades_matched, fixations_faces, fixations_matched] = find_face_saccades(options, patient, eye_file, eye)
 
     % Find the video name
-    file_table = readtable(sprintf('%s/Organize/file_names.xlsx', options.w_dir));
+    file_table = readtable(sprintf('%s/Organize/file_names.xlsx', options.drive_dir));
     [~, video] = fileparts(file_table.video_file{cellfun(@(C) contains(eye_file, C), file_table.mat_file)});
     
     % Load the SVM model

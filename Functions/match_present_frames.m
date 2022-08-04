@@ -3,7 +3,7 @@
 function match_present_frames(options)
 
     % Define the file name
-    out_file = sprintf('%s/Data/present_cmi/frame_transformation.mat', options.w_dir);
+    out_file = sprintf('%s/present_cmi/frame_transformation.mat', options.im_data_dir);
     
     if exist(out_file, 'file') == 0
 
@@ -12,7 +12,7 @@ function match_present_frames(options)
         frames_ns = 1:vid_ns.NumFrames;
 
         % Load the resampling ratio and offset to match frames to CMI verison
-        load(sprintf('%s/Organize/align_ns_cmi_present.mat', options.w_dir), 'resampling_ratio', 'offset')
+        load(sprintf('%s/Organize/align_ns_cmi_present.mat', options.drive_dir), 'resampling_ratio', 'offset')
 
         % Frames in CMI version corresponding to frames in NorthShore version
         frames_ns = round((frames_ns - offset)*resampling_ratio);

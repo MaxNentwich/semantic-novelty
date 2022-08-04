@@ -5,7 +5,7 @@ function extract_face_motion(options)
     for video = 1:length(options.face_motion_vids)
 
         % Directory for videos and results
-        out_dir = sprintf('%s/Data/Face_motion/', options.w_dir);
+        out_dir = sprintf('%s/Face_motion/', options.im_data_dir);
         if exist(out_dir, 'dir') == 0, mkdir(out_dir), end
 
         %% Load all the data if it hasn't already been loaded
@@ -18,11 +18,11 @@ function extract_face_motion(options)
 
             % Load the frame rate 
             if strcmp(options.face_motion_vids{video}, 'The_Present')
-                vid_file = sprintf('%s/Data/present_cmi/the_present_child_mind.mp4', options.w_dir);
+                vid_file = sprintf('%s/present_cmi/the_present_child_mind.mp4', options.im_data_dir);
                 vid = VideoReader(vid_file);
                 frame_rate = vid.FrameRate;
             else
-                load(sprintf('%s/Organize/vid_data.mat', options.w_dir), 'fr', 'vid_names')
+                load(sprintf('%s/Organize/vid_data.mat', options.drive_dir), 'fr', 'vid_names')
                 frame_rate = fr(cellfun(@(C) contains(C, options.face_motion_vids{video}), vid_names));
             end
             T = 1/frame_rate;
@@ -398,7 +398,7 @@ function extract_face_motion(options)
 
             %% Load the scene cuts
             if strcmp(options.face_motion_vids{video}, 'The_Present')
-                load(sprintf('%s/Data/present_cmi/cuts_present_cmi.mat', options.w_dir), 'cuts')
+                load(sprintf('%s/present_cmi/cuts_present_cmi.mat', options.im_data_dir), 'cuts')
             else
                 scene_table = xlsread(sprintf('%s/%s_scenes.xlsx', options.scene_annot_dir, options.face_motion_vids{video}));
                 cuts = scene_table(:,1);        
@@ -449,7 +449,7 @@ function extract_face_motion(options)
             if strcmp(options.face_motion_vids{video}, 'The_Present')
 
                 % Load the temporal contrast of the NorthShore version
-                load(sprintf('%s/Data/temporal_contrast.mat', options.w_dir), 'contrast_vid', 'vid_names')
+                load(sprintf('%s/temporal_contrast.mat', options.im_data_dir), 'contrast_vid', 'vid_names')
                 idx_vid = cellfun(@(C) contains(C, 'The_Present'), vid_names);
 
                 contrast_ns = contrast_vid{idx_vid};
@@ -458,7 +458,7 @@ function extract_face_motion(options)
                 align_present_cmi_ns(options)
 
                 % Load the resampling factor and offset for alignment
-                load(sprintf('%s/Organize/align_ns_cmi_present.mat', options.w_dir), 'resampling_ratio', 'offset')
+                load(sprintf('%s/Organize/align_ns_cmi_present.mat', options.drive_dir), 'resampling_ratio', 'offset')
 
                 v = resample(v, 1e3, 1e3*resampling_ratio);
 
@@ -469,7 +469,7 @@ function extract_face_motion(options)
                 if options.visualize_face_motion   
 
                     % Load the temporal contrast of the CMI version
-                    contr_file = sprintf('%s/Data/present_cmi/temp_contr_the_present_cmi.mat', options.w_dir);
+                    contr_file = sprintf('%s/present_cmi/temp_contr_the_present_cmi.mat', options.im_data_dir);
                     load(contr_file, 'contrast')
 
                     contrast_cmi = contrast;

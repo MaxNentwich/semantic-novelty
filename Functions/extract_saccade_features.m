@@ -31,11 +31,11 @@ function [features, prediction, score_face, saccade_sample, fixation_sample, sac
     end
     
     % Load the frame size
-    vid_files = dir(sprintf('%s/Data/video_frame_size', options.w_dir));
+    vid_files = dir(sprintf('%s/video_frame_size', options.im_data_dir));
     vid_files = vid_files(cellfun(@(C) contains(C, video), {vid_files.name}));
 
     [~, vid_filename] = fileparts(vid_files.name);
-    out_file = sprintf('%s/Data/video_frame_size/%s.mat', options.w_dir, vid_filename);
+    out_file = sprintf('%s/video_frame_size/%s.mat', options.im_data_dir, vid_filename);
     load(out_file, 'vid_size')
     
     %% Load et data
@@ -133,7 +133,7 @@ function [features, prediction, score_face, saccade_sample, fixation_sample, sac
     %% For the present the fixation frames have to be converted to the CMI version of the video
     if strcmp(video, 'The_Present')
     
-        load(sprintf('%s/Organize/align_ns_cmi_present.mat', options.w_dir), 'resampling_ratio', 'offset')
+        load(sprintf('%s/Organize/align_ns_cmi_present.mat', options.drive_dir), 'resampling_ratio', 'offset')
         fixation_frame = round((fixation_frame - offset)*resampling_ratio);
         
         % The CMI verison is shorter thus some fixations can't be matched to annotations 
@@ -147,9 +147,9 @@ function [features, prediction, score_face, saccade_sample, fixation_sample, sac
         
         %% Transform the eye position 
         % Load the variables for transformation
-        load(sprintf('%s/Data/present_cmi/frame_transformation.mat', options.w_dir), 'pix_border', 'scale')
+        load(sprintf('%s/present_cmi/frame_transformation.mat', options.im_data_dir), 'pix_border', 'scale')
         % Load the CMI video
-        load(sprintf('%s/Data/present_cmi/vid_size_present_cmi.mat', options.w_dir), 'vid_size_cmi');
+        load(sprintf('%s/present_cmi/vid_size_present_cmi.mat', options.im_data_dir), 'vid_size_cmi');
         
         % Adjust for the border
         pos_pre(:,2) = pos_pre(:,2) - pix_border(1);

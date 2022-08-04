@@ -36,6 +36,7 @@ options.cluster = 'max@134.74.28.223';                                          
 options.use_compute_node = true;                                                        % To run on cluster compute node
 options.compute_node_id = 0;                                                            % cluster compute node
 
+options.im_data_dir = sprintf('%s/Data', options.drive_dir);                            % Data from intermediary analysis steps
 options.fs_dir = sprintf('%s/Tobii/FullAnatomy', options.drive_dir);                    % Freesurfer data
 options.code_dir = sprintf('%s/Code', options.local_dir);                               % Code Directory
 options.w_dir = sprintf('%s/semantic_novelty', options.code_dir);                       % Working Directory
@@ -59,14 +60,14 @@ options.contr_dir = 'Stimuli/contr_max';                                        
 options.face_vel_dir = 'Stimuli/face_velocity';                                         % Face velocity at eye tracking sampling rate
 options.sacc_dir = 'Stimuli/saccades';                                                  % Saccade and Fixation onset matched to video frames
 options.trf_dir = 'Analysis/TRF_events';                                                % Output of TRF analysis
-options.fig_dir = sprintf('%s/Figures', options.w_dir);                                 % Figures 
+options.fig_dir = sprintf('%s/Figures', options.drive_dir);                             % Figures 
 options.cluster_data = sprintf('%s/edison/Patients', options.cluster_mnt);              % Data on cluster
 options.stats_data = sprintf('%s/Data/stats', options.w_dir);                           % Cluster stats
 options.cluster_chance = sprintf('%s/Data/cluster_chance', options.w_dir);              % Chance level for significant channels in cluster stats
-options.saccade_class = sprintf('%s/Data/saccade_classification', options.w_dir);       % Classification of saccades
+options.saccade_class = sprintf('%s/Data/saccade_classification', options.drive_dir);   % Classification of saccades
 options.saccade_label_dir = sprintf('%s/ssl_dataset', options.drive_dir);               % Saccade novelty by contrastive learning
 options.cut_dir = sprintf('%s/Tobii/scene_cuts_frames', options.drive_dir);             % Corrected scene cut files
-options.face_novelty = sprintf('%s/Data/faces_vs_novelty', options.w_dir);              % Overlap of saccades to faces and saccade novelty
+options.face_novelty = sprintf('%s/faces_vs_novelty', options.im_data_dir);             % Overlap of saccades to faces and saccade novelty
 
 options.local_dropbox = 'Dropbox (City College)';                               % Format inside matlab
 options.bash_dropbox = 'Dropbox\ \(City\ College\)';                            % Format for bash commands 
@@ -80,6 +81,8 @@ addpath(genpath(sprintf('%s/Functions', options.w_dir)))                        
 addpath(genpath(sprintf('%s/Data', options.drive_dir)))                             % Data not related to patients
 addpath(genpath(sprintf('%s/Organize', options.drive_dir)))                         % Tables and variables for organization
 addpath(genpath(sprintf('%s/External', options.w_dir)))                             % External packages
+
+if exist(options.im_data_dir, 'dir') == 0, mkdir(options.im_data_dir), end
 
 %% List of patients
 options.patients = dir(options.data_dir);

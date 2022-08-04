@@ -3,7 +3,7 @@
 function setup_ssl_dataset(options)
     
     % Load file name table
-    file_names = readtable(sprintf('%s/Organize/file_names.xlsx', options.w_dir));
+    file_names = readtable(sprintf('%s/Organize/file_names.xlsx', options.drive_dir));
      
     for pat = 1:length(options.patients)
 
@@ -87,7 +87,7 @@ function setup_ssl_dataset(options)
                 [~, mat_file] = fileparts(files(f).name);
                 [~, video_file] = fileparts(file_names.video_file{ismember(file_names.mat_file, mat_file)});
 
-                load(sprintf('%s/Data/video_frame_size/%s.mat', options.w_dir, video_file), 'vid_size')
+                load(sprintf('%s/video_frame_size/%s.mat', options.im_data_dir, video_file), 'vid_size')
 
                 vid_size_screen = options.destrect_ext([3,4]) - options.destrect_ext([1,2]);
                 rs_factor = vid_size./vid_size_screen;
@@ -122,7 +122,7 @@ function setup_ssl_dataset(options)
     end
     
     % Find the mean foveal radius
-    r_file = sprintf('%s/Organize/foveal_r.mat', options.w_dir);
+    r_file = sprintf('%s/Organize/foveal_r.mat', options.drive_dir);
     
     if exist(r_file, 'file') == 0
         r = foveal_r_all(options);
@@ -140,11 +140,12 @@ function setup_ssl_dataset(options)
     patch_rand_dir = sprintf('%s/random_patches', frame_dir);
     patch_match_dir = sprintf('%s/matched_patches', frame_dir);
     
-    if exist(patch_sacc_dir, 'dir') == 0, mkdir(patch_sacc_dir), end
-    if exist(patch_rand_dir, 'dir') == 0, mkdir(patch_rand_dir), end
-    if exist(patch_match_dir, 'dir') == 0, mkdir(patch_match_dir), end
-    
     if exist(patch_sacc_dir, 'dir') == 0 && exist(patch_rand_dir, 'dir') == 0 && exist(patch_match_dir, 'dir') == 0 
+        
+        % Create directories 
+        mkdir(patch_sacc_dir)
+        mkdir(patch_rand_dir)
+        mkdir(patch_match_dir)
         
         % Create a table to collect saccade attributes
         saccade_features = cell2table(cell(0,7), 'VariableNames', {'pre_saccade_file', 'post_saccade_file', 'saccade_amplitude', ...
@@ -274,13 +275,14 @@ function setup_ssl_dataset(options)
                     % File to save saccade patches
                     img_id = img_id +1;
 
-                    if img_id == 97
-                        pause
-                    end
-
-                    if img_id == 181
-                        pause
-                    end
+                    % Pause for sample figures in paper
+%                     if img_id == 97
+%                         pause
+%                     end
+% 
+%                     if img_id == 181
+%                         pause
+%                     end
 
                     % Saccades
                     saccade_pre_file{n_fr} = sprintf('id_%06d_pre_%s_%s_sac_%05d_fr_%05d.jpg', img_id, options.patients(pat).name, mat_file, ...

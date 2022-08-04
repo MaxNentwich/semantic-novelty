@@ -17,7 +17,7 @@ function saccade_duration(options)
 
             %% Create the file name and check if the file is already there
             % Create output directory if necessary            
-            sacc_dir = sprintf('%s/Data/saccade_data', options.w_dir);            
+            sacc_dir = sprintf('%s/saccade_data', options.im_data_dir);            
             if exist(sacc_dir, 'dir') == 0, mkdir(sacc_dir), end        
 
             %% Check which movie files were recorded for the patient

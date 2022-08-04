@@ -86,16 +86,16 @@ function [scene_cuts, scene_cuts_high, scene_cuts_low] = load_scenes(options, fi
     % Load the indices of high and low salience cuts
     if contains(video_name, 'Monkey')
         expression = '_Rep_\d';
-        load(sprintf('%s/Data/salience_cuts/%s_salience_cuts.mat', options.w_dir, video_name(1:regexp(video_name, expression)-1)), ...
+        load(sprintf('%s/salience_cuts/%s_salience_cuts.mat', options.im_data_dir, video_name(1:regexp(video_name, expression)-1)), ...
             'scenes_high_annot', 'scenes_low_annot');
         scenes_high = scenes_high_annot;
         scenes_low = scenes_low_annot;
     elseif contains(video_name, 'Present')
         expression = '_Rep_\d';
-        load(sprintf('%s/Data/salience_cuts/%s_salience_cuts.mat', options.w_dir, video_name(1:regexp(video_name, expression)-1)), ...
+        load(sprintf('%s/salience_cuts/%s_salience_cuts.mat', options.im_data_dir, video_name(1:regexp(video_name, expression)-1)), ...
             'scenes_high', 'scenes_low');
     else
-        load(sprintf('%s/Data/salience_cuts/%s_salience_cuts.mat', options.w_dir, video_name), 'scenes_high', 'scenes_low');
+        load(sprintf('%s/salience_cuts/%s_salience_cuts.mat', options.im_data_dir, video_name), 'scenes_high', 'scenes_low');
     end
     
     % Find the indices of scene cuts in the resamples signal 
