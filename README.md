@@ -1,7 +1,7 @@
 # Semantic novelty modulates neural responses to visual change across the human brain
 Code to reproduce results in https://www.biorxiv.org/content/10.1101/2022.06.20.496467v1.full
 
-Analysis and figures can be reproduced by running [main_ieeg_itrf](main_ieeg_itrf.m)
+Analysis and figures can be reproduced by running [main_ieeg_itrf](main_ieeg_itrf.m).
 
 A server can be set up to perform computation (about 128GB of memory are necessary). The script is set up to mount the server on a local 
 folder, copy necessary scripts and run analysis. Connection is established with SSH. Use `options.run_local = false` to compute on a server.
@@ -11,7 +11,7 @@ remote computation have been tested on Linux only.
 on the server. Data and scripts will be copied there. 
 `options.parallel_workers` sets the number of cores used as workers for parallel processing. 
 `options.use_compute_node` uses a compute node on the server that is accessed with SSH from the master node. This option is specific to our 
-setup and will likely need to be set 'false'. 
+setup and will likely need to be set `false`. 
 `options.run_local = true` runs analysis on the local machine. 
 
 Analysis can be computed for different features of the videos and subsets of videos. For analysis described in the manuscript the following options were used: 
