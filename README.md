@@ -1,7 +1,7 @@
 # Semantic novelty modulates neural responses to visual change across the human brain
 Code to reproduce results in https://www.biorxiv.org/content/10.1101/2022.06.20.496467v1.full
 
-Analysis and figures can be reproduced with main_ieeg_itrf.m.
+Analysis and figures can be reproduced with main_ieeg_itrf.m. [Contribution guidelines for this project](main_ieeg_itrf.m)
 
 A server can be set up to perform computation (about 128GB of memory are necessary). The script is set up to mount the server on a local 
 folder, copy necessary scripts and run analysis. Connection is established with SSH. Use `options.run_local = false` to compute on a server.
