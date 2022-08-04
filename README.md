@@ -7,7 +7,7 @@ A server can be set up to perform computation (about 128GB of memory are necessa
 folder, copy necessary scripts and run analysis. Connection is established with SSH. Use `options.run_local = false` to compute on a server.
 The [main_ieeg_itrf](Remote_computation/main_ieeg_itrf.m) script in the 'Remote_computation' folder needs to be copied onto the server or the mounted local folder. Scripts for
 remote computation have been tested on Linux only. 
-`options.cluster = 'user@xxx.xx.xx.xxx` is the username and IP adress to adress to the server. 'options.remote_home' defined the home directory
+`options.cluster = 'user@xxx.xx.xx.xxx` is the username and IP adress to adress to the server. `options.remote_home` defines the home directory
 on the server. Data and scripts will be copied there. 
 `options.parallel_workers` sets the number of cores used as workers for parallel processing. 
 `options.use_compute_node` uses a compute node on the server that is accessed with SSH from the master node. This option is specific to our 
