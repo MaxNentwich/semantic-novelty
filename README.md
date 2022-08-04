@@ -3,10 +3,10 @@ Code to reproduce results in https://www.biorxiv.org/content/10.1101/2022.06.20.
 
 Analysis and figures can be reproduced with main_ieeg_itrf.m.
 
-The following packages are required:
+## External packages used 
+Relevant scripts from external packages are included in 'External'. The full packages are available at:
 
-SDK to open data from Tucker-Davis Technolobies electrophysiology acquisition system: 
-https://www.tdt.com/docs/sdk/offline-data-analysis/offline-data-matlab/getting-started/
+SDK to open data from Tucker-Davis Technolobies electrophysiology acquisition system. Download [here](https://www.tdt.com/docs/sdk/offline-data-analysis/offline-data-matlab/getting-started/) (accessed 08/04/2022) 
 
 Chebfun for image compression
 https://www.chebfun.org/download/
