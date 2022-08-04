@@ -8,13 +8,13 @@ Relevant scripts from external packages are included in 'External'. The full pac
 
 SDK to open data from Tucker-Davis Technolobies electrophysiology acquisition system. Download [here](https://www.tdt.com/docs/sdk/offline-data-analysis/offline-data-matlab/getting-started/) (accessed 08/04/2022) 
 
-Chebfun for image compression. Download [here] (https://www.chebfun.org/download/) (accessed 08/04/2022) 
+Chebfun for image compression. Download [here](https://www.chebfun.org/download/) (accessed 08/04/2022) 
 
-iELVis for electrode visualization Download [here] (http://ielvis.pbworks.com/w/page/117734730/Installing%20iELVis) (accessed 08/04/2022) 
+iELVis for electrode visualization Download [here](http://ielvis.pbworks.com/w/page/117734730/Installing%20iELVis) (accessed 08/04/2022) 
 
-Package for violinplots. Download [here] (https://github.com/bastibe/Violinplot-Matlab) (accessed 08/04/2022) 
+Package for violinplots. Download [here](https://github.com/bastibe/Violinplot-Matlab) (accessed 08/04/2022) 
 
-Computational Brain Imaging Group (CBIG) repository for clustering. Download [here] (https://github.com/ThomasYeoLab/CBIG) (accessed 08/04/2022) 
+Computational Brain Imaging Group (CBIG) repository for clustering. Download [here](https://github.com/ThomasYeoLab/CBIG) (accessed 08/04/2022) 
 
 A server can be set up to perform computation (about 128GB of memory are necessary). The script is set up to mount the server on a local 
 folder, copy necessary scripts and run analysis. Connection is established with SSH. Use 'options.run_local = false' to compute on a server.
