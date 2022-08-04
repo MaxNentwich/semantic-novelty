@@ -1,4 +1,4 @@
-# semantic-novelty
+# Semantic novelty modulates neural responses to visual change across the human brain
 Code to reproduce results in https://www.biorxiv.org/content/10.1101/2022.06.20.496467v1.full
 
 Analysis and figures can be reproduced with main_ieeg_itrf.m.
