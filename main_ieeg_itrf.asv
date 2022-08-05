@@ -16,7 +16,7 @@ options.show_face_motion_frames = false;                                        
 options.visualize_face_motion = false;                                          % Plot the vector of face motions including corrections
 
 %% Run the TRF locally or on a server 
-options.run_local = false;
+options.run_local = true;
 options.parallel_workers = 20;                                                  % Select how many cores to use on cluster
 
 %% Options for TRF analysis
@@ -28,10 +28,9 @@ options.parallel_workers = 20;                                                  
 %     'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};    
 
 options.band_select = {'BHA'};                                               
-options.stim_labels = {'high_scenes', 'low_scenes', 'saccades', 'optical_flow'};   
+options.stim_labels = {'high_scenes', 'low_scenes', 'saccades'};   
 options.stim_select = {'high_scenes', 'low_scenes'};                
 options.vid_names = {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
-
 %% Directories 
 options.local_dir = '/home/max/Documents/Dropbox (City College)';                       % Path to local drive
 options.drive_dir = '/media/max/9C52B2EB52B2C972/ieeg_raw_sample';                      % Path to raw data on hard drive

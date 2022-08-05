@@ -9,8 +9,8 @@ options.run_local = false;                                                      
 
 %% Options for TRF analysis
 options.band_select = {'BHA'};                                         % Frequency band {'raw', 'Theta', 'Alpha', 'Beta', 'BHA'}
-options.stim_labels = {'optical_flow', 'scenes', 'saccades'};                             % Stimuli in the model {'optical_flow', 'scenes', 'saccades', 'high_scenes', 'low_scenes'}
-options.stim_select = {'optical_flow', 'scenes', 'saccades'};                                             % Stimuli to shuffle (selection of those in the model) 
+options.stim_labels = {'high_scenes', 'low_scenes', 'saccades', 'optical_flow'};                             % Stimuli in the model {'optical_flow', 'scenes', 'saccades', 'high_scenes', 'low_scenes'}
+options.stim_select = {'high_scenes', 'low_scenes'};                                             % Stimuli to shuffle (selection of those in the model) 
 options.vid_names = {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};                        % Videos {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'}  
 
 options.compute_trf = true;                                                    % Compute the TRF
@@ -21,6 +21,7 @@ options.compute_chance = false;                                                 
 options.cluster_dir = '/state/partition1/home/max';                                 % Path to home directory on cluster
 
 % options.code_dir = options.local_dir;                                             % Code Directory
+options.im_data_dir = sprintf('%s/edison_itrf/Data', options.cluster_dir);          % Data from intermediary analysis steps
 options.w_dir = sprintf('%s/edison_itrf', options.cluster_dir);                     % Working Directory
 options.data_dir = sprintf('%s/edison/Patients', options.cluster_dir);              % Data directory
 options.flow_dir = sprintf('%s/edison/Optic_flow', options.cluster_dir);            % Optical flow
@@ -107,7 +108,7 @@ options.p_amplitude_similarity = 0.50;                       % Minimum p-value f
 options.fs_ana = 60.00;
 
 %% Statistics and training 
-options.n_shuff = 10;               % Number of shuffles for stats
+options.n_shuff = 2;               % Number of shuffles for stats
 options.n_jack = 2;                 % Number of folds for training
 
 options.compute_r = false;          % Compute the correlation between the predicted and original signal

@@ -110,7 +110,7 @@ function compute_TRF_cluster(options)
         end
 
         % Salience cuts
-        salience_dir = sprintf('%s/Data/salience_cuts', options.w_dir);
+        salience_dir = sprintf('%s/salience_cuts', options.im_data_dir);
         salience_files = dir(salience_dir);
         salience_files([salience_files.isdir]) = [];
 
@@ -128,7 +128,7 @@ function compute_TRF_cluster(options)
         end
 
         %% Copy the movie name file
-        sys_org_dir = strrep(sprintf('%s/Organize', options.w_dir), options.local_dropbox, options.bash_dropbox);
+        sys_org_dir = strrep(sprintf('%s/Organize', options.drive_dir), options.local_dropbox, options.bash_dropbox);
 
         clust_org_dir = sprintf('%s/edison_itrf/Organize', options.cluster_mnt);
         if exist(clust_org_dir, 'dir') == 0, mkdir(clust_org_dir), end
@@ -163,7 +163,7 @@ function compute_TRF_cluster(options)
         end
         
         % Save the size of frames in all videos
-        out_dir = sprintf('%s/Data/video_frame_size', options.w_dir);
+        out_dir = sprintf('%s/video_frame_size', options.im_data_dir);
         if exist(out_dir, 'dir') == 0, mkdir(out_dir), end
         
         vid_files = dir(options.vid_dir);
@@ -197,13 +197,13 @@ function compute_TRF_cluster(options)
         system(sprintf('cp %s/align_ns_cmi_present.mat %s/align_ns_cmi_present.mat', sys_org_dir, clust_org_dir));
         
         % Size of the video frames
-        vid_cmi = VideoReader(sprintf('%s/Data/present_cmi/the_present_child_mind.mp4', options.w_dir));
+        vid_cmi = VideoReader(sprintf('%s/present_cmi/the_present_child_mind.mp4', options.im_data_dir));
         vid_size_cmi = [vid_cmi.Width, vid_cmi.Height];
         
-        save(sprintf('%s/Data/present_cmi/vid_size_present_cmi.mat', options.w_dir), 'vid_size_cmi');
+        save(sprintf('%s/present_cmi/vid_size_present_cmi.mat', options.im_data_dir), 'vid_size_cmi');
         
         % Copy to cluster
-        sys_present_dir = strrep(sprintf('%s/Data/present_cmi', options.w_dir), options.local_dropbox, options.bash_dropbox);
+        sys_present_dir = strrep(sprintf('%s/present_cmi', options.im_data_dir), options.local_dropbox, options.bash_dropbox);
 
         clust_present_dir = sprintf('%s/edison_itrf/Data/present_cmi', options.cluster_mnt);
         if exist(clust_present_dir, 'dir') == 0
@@ -245,9 +245,6 @@ function compute_TRF_cluster(options)
         system(sprintf('cp %s/Functions/load_envelope.m %s/load_envelope.m', sys_w_dir, function_dir));
         system(sprintf('cp %s/Functions/mTRF_filter_flow.m %s/mTRF_filter_flow.m', sys_w_dir, function_dir));
         system(sprintf('cp %s/Functions/mtrf_multi_train.m %s/mtrf_multi_train.m', sys_w_dir, function_dir));
-        system(sprintf('cp %s/Functions/mtrf_multi_test.m %s/mtrf_multi_test.m', sys_w_dir, function_dir));
-        system(sprintf('cp %s/Functions/shuffle_retrain.m %s/shuffle_retrain.m', sys_w_dir, function_dir));
-        system(sprintf('cp %s/Functions/shuffle_stats.m %s/shuffle_stats.m', sys_w_dir, function_dir));
         system(sprintf('cp %s/Functions/interpolateUsingLastGoodValue.m %s/interpolateUsingLastGoodValue.m', sys_w_dir, function_dir));
         system(sprintf('cp %s/Functions/find_face_saccades.m %s/find_face_saccades.m', sys_w_dir, function_dir));
         system(sprintf('cp %s/Functions/extract_saccade_features.m %s/extract_saccade_features.m', sys_w_dir, function_dir));
