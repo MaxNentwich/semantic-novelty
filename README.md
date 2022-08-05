@@ -4,6 +4,7 @@ Code to reproduce results in https://www.biorxiv.org/content/10.1101/2022.06.20.
 Analysis and figures can be reproduced by running [main_ieeg_itrf](main_ieeg_itrf.m).
 
 Set `options.local_dir` to the path containing all scripts.
+
 Set `options.drive_dir` to the path containing the data. 
 
 ## Settings for different parts of the analysis
@@ -113,4 +114,4 @@ Relevant scripts from external packages are included in 'External'. The full pac
 
 - Computational Brain Imaging Group (CBIG) repository for clustering. Download [here](https://github.com/ThomasYeoLab/CBIG) (accessed 08/04/2022)
 
-The system identification is based on the mTRF Toolbox. Download [here](https://github.com/mickcrosse/mTRF-Toolbox)
+The system identification is based on the mTRF Toolbox. Download [here](https://github.com/mickcrosse/mTRF-Toolbox) (accessed 08/04/2022) 

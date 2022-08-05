@@ -2,7 +2,7 @@
 
 %% Which level of analysis should be performed
 options.process_raw_data = false;                                               % Preprocessing of raw data
-options.process_trfs = true;                                                    % Compute the temporal response functions including surrogate data for statistics
+options.process_trfs = false;                                                   % Compute the temporal response functions including surrogate data for statistics
 options.process_stats = true;                                                   % Compute statistics
 options.process_plots = true;                                                   % Plot the figures
 
@@ -34,7 +34,7 @@ options.vid_names = {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian
 
 %% Directories 
 options.local_dir = '/home/max/Documents/Dropbox (City College)';                       % Path to local drive
-options.drive_dir = '/media/max/9C52B2EB52B2C972/ieeg_raw_sample';                      % Path to raw data on hard drive
+options.drive_dir = '/media/max/9C52B2EB52B2C972/ieeg_trf_sample';                      % Path to raw data on hard drive
 options.cluster_mnt = '/home/max/edison_mnt';                                           % Local mountpoint of cluster
 options.remote_home = '/state/partition1/home/max';                                     % User directory on cluster
 options.cluster = 'max@134.74.28.223';                                                  % User and IP of cluster
