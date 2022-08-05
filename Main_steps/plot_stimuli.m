@@ -5,7 +5,7 @@ function plot_stimuli(options)
     % Create the output directory
     out_dir = sprintf('%s/stimuli', options.fig_dir);
     
-    sacc_dir = sprintf('%s/Data/saccade_data', options.w_dir);  
+    sacc_dir = sprintf('%s/saccade_data', options.im_data_dir);  
     
     if exist(out_dir, 'dir') == 0
         
@@ -82,10 +82,8 @@ function plot_stimuli(options)
 
                 %% Load saccades 
                 fprintf('Detecting saccades ...\n')
-%                 saccades = detect_saccade_onset(eye, options, options.visualize_trfs);
 
                 % Resample to match scene cuts
-%                 saccades = resample_peaks(saccades, length(saccades), length(saccades)/length(contrast_ds));
                 saccades = resample_peaks(saccade_onset, length(saccade_onset), length(saccade_onset)/length(contrast_ds));
                 
                 %% Load the optical flow
@@ -114,7 +112,6 @@ function plot_stimuli(options)
         flow_files = dir(options.flow_dir);
         flow_files([flow_files.isdir]) = [];
         flow_files(cellfun(@(C) contains(C, 'Inscapes'), {flow_files.name})) = [];
-%         flow_files = flow_files(cellfun(@(C) contains(C, 'Present'), {flow_files.name}));
         
         flow_vid = [];
         scenes_vid = [];

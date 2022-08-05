@@ -71,7 +71,7 @@ function plot_event_boundary_annotations(options)
         %% Load data from Sam
         time_vec = (0:vid.NumFrames-1)/fs;
 
-        annot_dir = sprintf('%s/Data/Event_boundaries_Cohen', options.w_dir);
+        annot_dir = sprintf('%s/Event_boundaries_Cohen', options.im_data_dir);
         annot_files = dir(annot_dir);
         annot_files([annot_files.isdir]) = [];
 
@@ -144,7 +144,7 @@ function plot_event_boundary_annotations(options)
         saveas(gca, sprintf('%s/xcorr.png', out_dir))
 
         % Smoothing of data
-        load(sprintf('%s/Data/salience_cuts/Despicable_Me_English_salience_cuts.mat', options.w_dir), 'scenes_high', 'scenes_low')
+        load(sprintf('%s/salience_cuts/Despicable_Me_English_salience_cuts.mat', options.im_data_dir), 'scenes_high', 'scenes_low')
         scenes_high_vec = zeros(size(scenes_all));
         scenes_high_vec(scenes_high) = 1;
         

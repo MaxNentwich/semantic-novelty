@@ -25,7 +25,7 @@ function plot_motion_saccades_cuts(options_main)
             vid_label, labels_str, options_main.band_select{b}, options_main.fs_ana, lambda, options_main.n_shuff);
         
         %% Load the data
-        stats_dir = sprintf('%s/Data/stats', options_main.w_dir);
+        stats_dir = sprintf('%s/stats', options_main.im_data_dir);
         
         if exist(sprintf('%s/%s', stats_dir, vid_file), 'file') ~= 0
 
@@ -236,8 +236,6 @@ function plot_motion_saccades_cuts(options_main)
                 bar_condition(1).CData = options_main.color_scenes;
                 bar_condition(2).CData = options_main.color_saccades;
                 bar_condition(3).CData = options_main.color_flow;
-
-%                 grid on 
                 
                 xticks(1:size(n_stacked,1))
                 xticklabels(region_labels)

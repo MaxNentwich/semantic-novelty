@@ -28,7 +28,7 @@ function plot_events_cuts(options, out_dir_name, plot_filters)
             vid_label, labels_str, options_main.band_select{b}, options_main.fs_ana, lambda, options_main.n_shuff);
 
         %% Load the data
-        stats_dir = sprintf('%s/Data/stats', options_main.w_dir);
+        stats_dir = sprintf('%s/stats', options_main.im_data_dir);
 
         if exist(sprintf('%s/%s', stats_dir, vid_file), 'file') ~= 0
 

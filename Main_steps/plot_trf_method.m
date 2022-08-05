@@ -2,7 +2,7 @@
 
 function plot_trf_method(options_main, type)
 
-    sacc_dir = sprintf('%s/Data/saccade_data', options_main.w_dir); 
+    sacc_dir = sprintf('%s/saccade_data', options_main.im_data_dir); 
 
     % Create the output directory
     if strcmp(type, 'one_paper')

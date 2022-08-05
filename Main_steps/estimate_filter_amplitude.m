@@ -5,7 +5,7 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
     for b = 1:length(options_main.band_select)
 
         % Check if amplitudes have been computes
-        data_dir = sprintf('%s/Data/amplitudes', options_main.w_dir);
+        data_dir = sprintf('%s/amplitudes', options_main.im_data_dir);
         if exist(data_dir, 'dir') == 0, mkdir(data_dir), end
 
         data_file = sprintf('%s/%s_%s.mat', data_dir, y_label_str, options_main.band_select{b});
@@ -26,7 +26,7 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
             vid_label, labels_str, options_main.band_select{b}, options_main.fs_ana, lambda, options_main.n_shuff);
 
         %% Load the filters
-        stats_dir = sprintf('%s/Data/stats', options_main.w_dir);
+        stats_dir = sprintf('%s/stats', options_main.im_data_dir);
 
         if exist(sprintf('%s/%s', stats_dir, vid_file), 'file') ~= 0
 
@@ -270,10 +270,14 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
 
                 p_region(l) = signrank(a_diff(idx_region));
 
+            end
+            
+            p_region = mafdr(p_region, 'BHFDR', true);
+            
+            for l = 1:length(regions)
                 if p_region(l) < 0.05
                     plot(l, max(a_diff) + 0.2, 'k*', 'MarkerSize', 15, 'LineWidth', 1.5)
                 end
-
             end
 
             xticklabels(x_tick_labels)

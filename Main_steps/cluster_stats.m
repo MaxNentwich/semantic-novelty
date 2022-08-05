@@ -36,6 +36,8 @@ function cluster_stats(options)
             
         else
 
+            fprintf('%s/%s\n', options.stats_data, vid_file)
+            
             load(sprintf('%s/%s', options.stats_data, vid_file), 'w_all', 'sig_all', 'p_all', 'labels_all',  'n_clust', 'options')
             
             str_last = strsplit(labels_all{end}, '_');
@@ -48,9 +50,9 @@ function cluster_stats(options)
             idx_pat = find(ismember({options.patients.name}, patient_last)) + 1;
             
         end
-
+        
         if idx_pat <= length(options.patients)
-
+            
             for pat = idx_pat:length(options.patients)
 
                 fprintf('Loading Patient %s ...\n', options.patients(pat).name);

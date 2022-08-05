@@ -3,7 +3,7 @@
 %% Which level of analysis should be performed
 options.process_raw_data = false;                                               % Preprocessing of raw data
 options.process_trfs = false;                                                   % Compute the temporal response functions including surrogate data for statistics
-options.process_stats = true;                                                   % Compute statistics
+options.process_stats = false;                                                  % Compute statistics
 options.process_plots = true;                                                   % Plot the figures
 
 %% Set flags for visualization and videos with eye movements or annotations
@@ -16,25 +16,20 @@ options.show_face_motion_frames = false;                                        
 options.visualize_face_motion = false;                                          % Plot the vector of face motions including corrections
 
 %% Run the TRF locally or on a server 
-options.run_local = false;
+options.run_local = true;
 options.parallel_workers = 20;                                                  % Select how many cores to use on cluster
 
 %% Options for TRF analysis
-% options.band_select = {'BHA'};                                                      % Frequency band {'raw', 'Theta', 'Alpha', 'Beta', 'BHA'}
-% options.stim_labels = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli in the model {'optical_flow', 'face_motion', 'saccades', 'saccades_faces', 'saccades_matched', 'saccades_high_novelty', 'saccades_low_novelty', 'scenes', 'high_scenes', 'low_scenes'}
-% options.stim_select = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli to shuffle (selection of those in the model) 
-%                 
-% options.vid_names = {'Monkey', 'Despicable_Me_English', ...                         % Videos {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'}
-%     'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};    
-
-options.band_select = {'BHA'};                                               
-options.stim_labels = {'high_scenes', 'low_scenes', 'saccades', 'optical_flow'};   
-options.stim_select = {'high_scenes', 'low_scenes'};                
-options.vid_names = {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
+options.band_select = {'BHA'};                                                      % Frequency band {'raw', 'Theta', 'Alpha', 'Beta', 'BHA'}
+options.stim_labels = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli in the model {'optical_flow', 'face_motion', 'saccades', 'saccades_faces', 'saccades_matched', 'saccades_high_novelty', 'saccades_low_novelty', 'scenes', 'high_scenes', 'low_scenes'}
+options.stim_select = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli to shuffle (selection of those in the model) 
+                
+options.vid_names = {'Monkey', 'Despicable_Me_English', ...                         % Videos {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'}
+    'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};    
 
 %% Directories 
 options.local_dir = '/home/max/Documents/Dropbox (City College)';                       % Path to local drive
-options.drive_dir = '/media/max/9C52B2EB52B2C972/ieeg_trf_sample';                      % Path to raw data on hard drive
+options.drive_dir = '/media/max/9C52B2EB52B2C972/ieeg_plot';                            % Path to raw data on hard drive
 options.cluster_mnt = '/home/max/edison_mnt';                                           % Local mountpoint of cluster
 options.remote_home = '/state/partition1/home/max';                                     % User directory on cluster
 options.cluster = 'max@134.74.28.223';                                                  % User and IP of cluster
@@ -67,9 +62,8 @@ options.sacc_dir = 'Stimuli/saccades';                                          
 options.trf_dir = 'Analysis/TRF_events';                                                % Output of TRF analysis
 options.fig_dir = sprintf('%s/Figures', options.drive_dir);                             % Figures 
 options.cluster_data = sprintf('%s/edison/Patients', options.cluster_mnt);              % Data on cluster
-options.stats_data = sprintf('%s/Data/stats', options.w_dir);                           % Cluster stats
-options.cluster_chance = sprintf('%s/Data/cluster_chance', options.w_dir);              % Chance level for significant channels in cluster stats
-options.saccade_class = sprintf('%s/Data/saccade_classification', options.drive_dir);   % Classification of saccades
+options.stats_data = sprintf('%s/stats', options.im_data_dir);                          % Cluster stats
+options.saccade_class = sprintf('%s/saccade_classification', options.im_data_dir);      % Classification of saccades
 options.saccade_label_dir = sprintf('%s/ssl_dataset', options.drive_dir);               % Saccade novelty by contrastive learning
 options.cut_dir = sprintf('%s/Tobii/scene_cuts_frames', options.drive_dir);             % Corrected scene cut files
 options.face_novelty = sprintf('%s/faces_vs_novelty', options.im_data_dir);             % Overlap of saccades to faces and saccade novelty
@@ -88,6 +82,7 @@ addpath(genpath(sprintf('%s/Organize', options.drive_dir)))                     
 addpath(genpath(sprintf('%s/External', options.w_dir)))                             % External packages
 
 if exist(options.im_data_dir, 'dir') == 0, mkdir(options.im_data_dir), end
+if exist(options.fig_dir, 'dir') == 0, mkdir(options.fig_dir), end
 
 %% List of patients
 options.patients = dir(options.data_dir);
@@ -157,7 +152,7 @@ options.remote_frames = {'Despicable_Me_English', 'Despicable_Me_Hungarian'};
 options.fs_ana = 60;
 
 %% Statistics and training 
-options.n_shuff = 2;                % Number of shuffles for stats
+options.n_shuff = 1e4;              % Number of shuffles for stats
 options.n_jack = 2;                 % Number of folds for training
 
 options.compute_r = false;          % Compute the correlation between the predicted and original signal
@@ -296,12 +291,6 @@ if options.process_raw_data
     %% Setup data for defining novelty in saccades through self supervised learning
     setup_ssl_dataset(options)
 
-    %% Compare the timining of saccades after scene cuts
-    saccade_novelty_frequency(options)
-
-    %% Time between saccade and fixation onset
-    saccade_duration(options)
-
     %% Overlap of saccades to faces and saccade novelty
     face_vs_novelty_saccades(options)
 
@@ -331,6 +320,12 @@ end
 
 %% Plot all figures
 if options.process_plots
+    
+    %% Time between saccade and fixation onset
+    saccade_duration(options)
+    
+    %% Compare the timining of saccades after scene cuts (Figure S12)
+    saccade_novelty_frequency(options)
     
     %% Figure of the position of all electrodes (Figure 1A)
     plot_all_electrodes(options)

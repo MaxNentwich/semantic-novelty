@@ -68,10 +68,6 @@ function face_vs_novelty_saccades(options)
 
                 [saccades_faces, saccades_matched] = find_face_saccades(options, options.patients(pat).name, files(f).name, eye);
 
-%                 % Resample to match scene cuts
-%                 saccades_faces = resample_peaks(saccades_faces, length(saccades_faces), length(saccades_faces)/length(contrast_ds));
-%                 saccades_matched = resample_peaks(saccades_matched, length(saccades_matched), length(saccades_matched)/length(contrast_ds));
-
                 %% Split saccades by amplitude and novelty                    
                 fprintf('Loading the saccades with high and low novelty...\n')
 
