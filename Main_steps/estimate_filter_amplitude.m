@@ -200,7 +200,7 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
         else           
             load(data_file, 'a_condition_1_all', 'a_condition_2_all', 'y_label_str', 'labels_all', 'patients_no_data')         
         end
-        
+ 
         % Output directory
         fig_dir = sprintf('%s/amplitudes', options_main.fig_dir);
         if exist(fig_dir, 'dir') == 0, mkdir(fig_dir), end
@@ -220,7 +220,7 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
             a_diff(idx_inf) = [];
             labels_all(idx_inf) = [];
 
-            loc = localize_elecs_bipolar(labels_all, 'lobes');
+            [loc, ~, pat_names] = localize_elecs_bipolar(labels_all, 'lobes');
 
             regions = unique(loc);
 
@@ -240,44 +240,90 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
 
             end
 
-            a_diff(cellfun(@(C) isempty(C), idx_cat)) = [];
-            idx_cat(cellfun(@(C) isempty(C), idx_cat)) = [];
+            % Remove unlocalized electrodes
+            idx_empty = cellfun(@(C) isempty(C), idx_cat);
+            
+            pat_names(idx_empty) = [];
+            
+            a_diff(idx_empty) = [];
+            idx_cat(idx_empty) = [];
+            
+            % Check how the distribution looks like
+            plot_distribution(a_diff)
 
-            % Remove outliers
-            idx_cat(a_diff > prctile(a_diff, 99.9)) = [];
-            a_diff(a_diff > prctile(a_diff, 99.9)) = [];
+            log_transform = input('Apply log transformation? (yes=1, no=0) \n');
 
-            idx_cat(a_diff < prctile(a_diff, 0.4)) = [];
-            a_diff(a_diff < prctile(a_diff, 0.4)) = [];
+            if log_transform 
+
+                a_diff = log(a_diff + 1);
+                plot_distribution(a_diff)
+
+            end
+            
+            xlabel('Amplitude Difference')
+            ylabel('Normalized Count')
+            legend({'Data', 'Gaussian Fit'})
+            
+            dist_file = sprintf('%s/%s_distribution.png', fig_dir, y_label_str);
+            saveas(gca, dist_file)
+            
+            %% ANOVA 
+            % Anova for main effects of brain region and random effect of patient
+            p_anova = anovan(a_diff, {idx_cat pat_names}, 'random',2, 'varnames', {'Region','Patient'});
+
+            %% Average difference of amplitudes in each region and patient 
+            patients = unique(pat_names);
+            
+            a_diff_pat = nan(length(regions), length(patients));
+            
+            for r = 1:length(regions)   
+                idx_region = ismember(idx_cat, regions(r));
+                for p = 1:length(patients)
+                    idx_pat = ismember(pat_names, patients(p));
+                    a_diff_pat(r,p) = mean(a_diff(idx_region & idx_pat));
+                end
+            end
+            
+            % Pairwise test for means across patients
+            p_pair = zeros(1, length(regions));
+            
+            for r = 1:length(regions)      
+                p_pair(r) = signrank(a_diff_pat(r,:));       
+            end
+            
+            p_pair = mafdr(p_pair, 'BHFDR', 'true');
+            
+            % Save stats
+            median_a_diff_pat = nanmedian(a_diff_pat);
+            
+            stat_file = strrep(data_file, '.mat', '_stats.mat');
+            save(stat_file, 'p_anova', 'p_pair', 'median_a_diff_pat')
+            
+            %% Plot
 
             figure('Position', [700 300 700 550])
             hold on
 
             plot([0.5 6.5], [0 0], 'k--', 'Color', 0.5*ones(3,1))
 
-            violinplot(a_diff, idx_cat, 'ShowData', false, 'ShowBox', false, 'ShowWhiskers', false, 'ShowNotches', false, ...
-                'ShowMedian', false, 'BandWidth', smooth_band_width, 'ViolinColor', options_main.region_color, 'GroupOrder', regions);
+            a_diff_pat = a_diff_pat';
+            idx_cat_pat = repmat(regions', length(patients), 1);
+            
+            violinplot(a_diff_pat(:), idx_cat_pat(:), 'ShowData', false, 'ShowBox', false, 'ShowWhiskers', false, 'ShowNotches', false, ...
+                'ShowMedian', false, 'BandWidth', 0.075, 'ViolinColor', options_main.region_color, 'GroupOrder', regions);
 
             x_tick_labels = xticklabels;
-
-            for l = 1:length(regions)
-
-                idx_region = cellfun(@(C) strcmp(C, regions{l}), idx_cat);
-                med_diff(l) = median(a_diff(idx_region));
-                plot([l-0.3, l+0.3], [med_diff(l), med_diff(l)], 'k--')
-
-                x_tick_labels{l} = sprintf('%s (N = %i)', x_tick_labels{l}, sum(idx_region));
-
-                p_region(l) = signrank(a_diff(idx_region));
-
-            end
             
-            p_region = mafdr(p_region, 'BHFDR', true);
-            
+            %% Correct p-values for main effect of condition for multiple comparisons
             for l = 1:length(regions)
-                if p_region(l) < 0.05
-                    plot(l, max(a_diff) + 0.2, 'k*', 'MarkerSize', 15, 'LineWidth', 1.5)
+                
+                if p_pair(1,l) < 0.05
+                    plot(l, max(a_diff_pat(:)) + 0.2, 'k*', 'MarkerSize', 15, 'LineWidth', 1.5)
                 end
+
+                scatter(0.05*randn(1, length(patients))+l, a_diff_pat(:, l), 10, 'MarkerFaceColor', options_main.region_color(l,:), ...
+                        'MarkerEdgeColor',[0 0 0])
+                plot([l-0.25, l+0.25], nanmedian(a_diff_pat(:,l))*[1 1], 'k--')
             end
 
             xticklabels(x_tick_labels)
@@ -285,7 +331,8 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
             xtickangle(45)
             xlim([0.5 6.5])
 
-            ylabel(y_label_str)
+            title(y_label_str)
+            ylabel('Amplitude Difference')
 
             set(gca, 'FontSize', 22)
 

@@ -1,6 +1,6 @@
 %% Localize the electrodes in cortical lobes
 
-function [loc, atlas] = localize_elecs_bipolar(electrode_names, atlas_select)
+function [loc, atlas, pat_name] = localize_elecs_bipolar(electrode_names, atlas_select)
 
     atlas = {'DK_Lobe', 'AparcAseg_Atlas', 'DK_Atlas', 'D_Atlas', 'D_Full'};
 
@@ -8,39 +8,40 @@ function [loc, atlas] = localize_elecs_bipolar(electrode_names, atlas_select)
     load('movie_subs_table.mat')
 
     loc = cell(length(electrode_names),5,2);
+    pat_name = cell(length(electrode_names), 1);
 
     for e = 1:length(electrode_names)
 
         labels_indiv = strsplit(electrode_names{e}, '-');
-        
+
         for l = 1:length(labels_indiv)
             
             sub_elec = strsplit(labels_indiv{l}, '_');   
 
             if length(sub_elec) == 2
-                sub_name = sub_elec(1);
+                pat_name(e) = sub_elec(1);
                 ch_name = sub_elec(2);
             elseif length(sub_elec) == 3
-                sub_name = {[sub_elec{1}, '_', sub_elec{2}]};
+                pat_name(e) = {[sub_elec{1}, '_', sub_elec{2}]};
                 ch_name = sub_elec(3);
             end    
-            if strcmp(sub_name, 'NS144_02') && contains(ch_name, 'RGrid')
+            if strcmp(pat_name(e), 'NS144_02') && contains(ch_name, 'RGrid')
                 ch_name = strrep(ch_name, 'RGrid', 'LGrid');
             end
-            if strcmp(sub_name, 'NS148_02') && contains(ch_name, 'RGrid')
+            if strcmp(pat_name(e), 'NS148_02') && contains(ch_name, 'RGrid')
                 ch_name = strrep(ch_name, 'RGrid', 'RGridHD');
             end
-            if strcmp(sub_name, 'NS134') && contains(ch_name, 'RFl')
+            if strcmp(pat_name(e), 'NS134') && contains(ch_name, 'RFl')
                 ch_name = strrep(ch_name, 'RFl', 'RFL');
             end
-            if strcmp(sub_name, 'NS134') && contains(ch_name, 'RIa')
+            if strcmp(pat_name(e), 'NS134') && contains(ch_name, 'RIa')
                 ch_name = strrep(ch_name, 'RIa', 'Ria');
             end
-            if strcmp(sub_name, 'NS138') && contains(ch_name, 'LIa')
+            if strcmp(pat_name(e), 'NS138') && contains(ch_name, 'LIa')
                 ch_name = strrep(ch_name, 'LIa', 'Lia');
             end
 
-            idx_elec = ismember(movie_subs_table.SubID, sub_name) & ismember(movie_subs_table.Contact, ch_name);
+            idx_elec = ismember(movie_subs_table.SubID, pat_name(e)) & ismember(movie_subs_table.Contact, ch_name);
 
             if sum(idx_elec) ~= 0           
                 loc{e,1,l} = movie_subs_table.DK_Lobe{idx_elec};

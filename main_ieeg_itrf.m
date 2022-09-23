@@ -20,12 +20,17 @@ options.run_local = true;
 options.parallel_workers = 20;                                                  % Select how many cores to use on cluster
 
 %% Options for TRF analysis
-options.band_select = {'BHA'};                                                      % Frequency band {'raw', 'Theta', 'Alpha', 'Beta', 'BHA'}
-options.stim_labels = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli in the model {'optical_flow', 'face_motion', 'saccades', 'saccades_faces', 'saccades_matched', 'saccades_high_novelty', 'saccades_low_novelty', 'scenes', 'high_scenes', 'low_scenes'}
-options.stim_select = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli to shuffle (selection of those in the model) 
-                
-options.vid_names = {'Monkey', 'Despicable_Me_English', ...                         % Videos {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'}
-    'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};    
+% options.band_select = {'BHA'};                                                      % Frequency band {'raw', 'Theta', 'Alpha', 'Beta', 'BHA'}
+% options.stim_labels = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli in the model {'optical_flow', 'face_motion', 'saccades', 'saccades_faces', 'saccades_matched', 'saccades_high_novelty', 'saccades_low_novelty', 'scenes', 'high_scenes', 'low_scenes'}
+% options.stim_select = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli to shuffle (selection of those in the model) 
+%                 
+% options.vid_names = {'Monkey', 'Despicable_Me_English', ...                         % Videos {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'}
+%     'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
+
+options.band_select = {'BHA'};                                               
+options.stim_labels = {'optical_flow', 'face_motion', 'saccades', 'scenes'}; 
+options.stim_select = {'optical_flow', 'face_motion'};
+options.vid_names = {'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
 
 %% Directories 
 options.local_dir = '/home/max/Documents/Dropbox (City College)';                       % Path to local drive
@@ -344,13 +349,13 @@ if options.process_plots
             && length(options.stim_labels) == length(options.stim_fig_2)
 
         options.atlas = 'lobes';                                                                % Figure 2, Figure S18
-        plot_motion_saccades_cuts(options)                                                 
+        plot_motion_saccades_cuts(options)    
         
         options.atlas = 'AparcAseg_Atlas';                                                      % Figure S4C
         plot_motion_saccades_cuts(options)
         
         estimate_filter_amplitude(options, 'scenes', 'Event - Continuous', 0.1)                 % Figure 3A
-        estimate_filter_amplitude(options, 'saccades_novelty', 'High - Low Novelty', 0.03)      % Figure 4A
+        estimate_filter_amplitude(options, 'saccades_novelty', 'High - Low Novelty', 0.02)      % Figure 4A
         estimate_filter_amplitude(options, 'saccades_faces', 'Faces - Non-Faces', 0.05)         % Figure 5A
 
     end
@@ -359,11 +364,14 @@ if options.process_plots
     if sum(ismember(options.stim_labels, options.stim_fig_3)) == length(options.stim_fig_3) ...
             && length(options.stim_labels) == length(options.stim_fig_3)
 
+        options.bar_colors = [0 1 0; 0 0.6 0; 0 0.2 0];
+        
         % Check which movies are selected
         if sum(ismember(options.vid_names, options.vid_fig_3)) == length(options.vid_fig_3) ...
             && length(options.vid_names) == length(options.vid_fig_3)
 
             options.atlas = 'lobes';                                                                % Figure 3C&D, Figure S7A, Figure S9
+            options.include_insula = false;                                                         % Don't plot insula channels
             plot_events_cuts(options, 'event_continuous_cuts', 1)
 
             options.atlas = 'AparcAseg_Atlas';                                                      % Figure S10
@@ -373,12 +381,14 @@ if options.process_plots
             && length(options.vid_names) == length(options.vid_fig_S8A)
         
             options.atlas = 'lobes';                                                                % Figure S8A
+            options.include_insula = false;   
             plot_events_cuts(options, 'event_continuous_cuts_monkey', 0)
             
         elseif sum(ismember(options.vid_names, options.vid_fig_S8B)) == length(options.vid_fig_S8B) ...
             && length(options.vid_names) == length(options.vid_fig_S8B)
 
             options.atlas = 'lobes';                                                                % Figure S8B
+            options.include_insula = false;   
             plot_events_cuts(options, 'event_continuous_cuts_comics', 0)
             
         end
@@ -390,6 +400,7 @@ if options.process_plots
             && length(options.stim_labels) == length(options.stim_fig_S7)
 
         options.atlas = 'lobes';                                                                    % Figure S7B
+        options.include_insula = false; 
         plot_events_cuts(options, 'event_continuous_cuts_saccades_motion', 0)
         
     end
@@ -398,6 +409,9 @@ if options.process_plots
     if sum(ismember(options.stim_labels, options.stim_fig_4)) == length(options.stim_fig_4) ...
             && length(options.stim_labels) == length(options.stim_fig_4)
 
+        options.include_insula = true;
+        options.bar_colors = [0.15 0.8 1; 0.075 0.4 0.65; 0 0 0.3];
+        
         options.atlas = 'lobes';                                                                    % Figure 4C&D, Figure S13
         plot_saccades_novelty(options)
         
@@ -410,6 +424,9 @@ if options.process_plots
     if sum(ismember(options.stim_labels, options.stim_fig_5)) == length(options.stim_fig_5) ...
             && length(options.stim_labels) == length(options.stim_fig_5)
 
+        options.include_insula = true;
+        options.bar_colors = [0.15 0.8 1; 0.075 0.4 0.65; 0 0 0.3];
+        
         options.atlas = 'lobes';                                                                    % Figure 5C&D
         plot_saccades_faces(options)
         
@@ -421,8 +438,12 @@ if options.process_plots
     %% Plot the comparison of average optical flow and face motion (Figure 6B&C, Figure S17)
     if sum(ismember(options.stim_labels, options.stim_fig_6)) == length(options.stim_fig_6) ...
             && length(options.stim_labels) == length(options.stim_fig_6)
-
+        
+        options.include_insula = true;
+        options.bar_colors = [1 0 0; 0.66 0 0; 0.33 0 0];
+        
         options.atlas = 'lobes';                                                                    % Figure 6B&C
+        
         plot_flow_face_motion(options)
         
         options.atlas = 'AparcAseg_Atlas';                                                          % Figure S17

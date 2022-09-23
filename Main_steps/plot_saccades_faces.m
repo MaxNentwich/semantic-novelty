@@ -8,6 +8,10 @@ function plot_saccades_faces(options)
     out_dir = sprintf('%s/saccades_faces', options.fig_dir);
     if exist(out_dir, 'dir') == 0, mkdir(out_dir), end
     
+    % Directory for stats
+    data_dir = sprintf('%s/statistics', options_main.im_data_dir);
+    if exist(data_dir, 'dir') == 0, mkdir(data_dir), end
+    
     for b = 1:length(options.band_select)
         
         % Find the index of the selected frequency band
@@ -73,251 +77,44 @@ function plot_saccades_faces(options)
             labels_not = labels_not(~ismember(labels_not, labels_shared));
 
             % Localize electrodes
-            loc_all = localize_elecs_bipolar(labels_all, options_main.atlas); 
+            [n_lobes_all, n_lobes_all_sig, n_lobes_face, n_lobes_not, n_lobes_shared, regions, patients, loc_all] = ...
+                localize_elecs_patient(labels_all, labels_all_sig, labels_face, labels_not, labels_shared, options_main.atlas);
+                     
+            %% Stats
+            jaccard_dist = 1 - (n_lobes_shared ./ sum(cat(3, n_lobes_face, n_lobes_not, n_lobes_shared), 3));
             
-            loc_all_sig = localize_elecs_bipolar(labels_all_sig, options_main.atlas);
-            loc_face = localize_elecs_bipolar(labels_face, options_main.atlas);
-            loc_not = localize_elecs_bipolar(labels_not, options_main.atlas);
-            loc_shared = localize_elecs_bipolar(labels_shared, options_main.atlas);
+            [regions, jaccard_dist, n_lobes_all_sig, n_lobes_face, n_lobes_shared, n_lobes_not, n_lobes_all] = ...
+                remove_areas(options_main, regions, jaccard_dist, n_lobes_all_sig, n_lobes_face, n_lobes_shared, n_lobes_not, n_lobes_all);
 
-            regions = unique(loc_all_sig);
-
-            % Count the number of electrodes in each lobe
-            n_lobes_all_sig = zeros(size(regions));
-            n_lobes_all = zeros(size(regions));
-            n_lobes_face = zeros(size(regions));
-            n_lobes_not = zeros(size(regions));
-            n_lobes_shared = zeros(size(regions));
-
-            for l = 1:length(regions)
-
-                n_lobes_all_sig(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_all_sig(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_all_sig(:,2))],2)));
-                n_lobes_all(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_all(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_all(:,2))],2)));
-                n_lobes_face(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_face(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_face(:,2))],2)));    
-                n_lobes_not(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_not(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_not(:,2))],2)));    
-                n_lobes_shared(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_shared(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_shared(:,2))],2)));
-
-            end
-
-            %% Figures 
-            n_stacked = [n_lobes_face, n_lobes_shared, n_lobes_not]./n_lobes_all;
-            
-            % Remove 'unkown' channels  
-            if ~ options_main.inlude_unknown
-                
-                idx_unknown = cellfun(@(C) strcmp(C, 'Unknown'), regions);
-                
-                n_lobes_all_sig(idx_unknown) = [];
-                n_lobes_all(idx_unknown) = [];
-
-                regions(idx_unknown) = [];
-                
-                n_stacked(idx_unknown, :) = [];
-            
-            end
-            
             if strcmp(options_main.atlas, 'lobes')
+
+                [p_sm, p_pair, median_dist, N] = compute_stats_specificity(jaccard_dist, regions);
+                
+                save(sprintf('%s/face_saccades_stats.mat', data_dir), 'p_sm', 'p_pair', 'median_dist', 'N', 'regions')
             
-                idx_sort = cellfun(@(C) find(ismember(regions, C)), options_main.regions_order, 'UniformOutput', false);
-                idx_sort(cellfun(@(C) isempty(C), idx_sort)) = [];
-                idx_sort = cell2mat(idx_sort);
-        
+            end
+            
+            %% Sort areas 
+            [regions, jaccard_dist, n_lobes_all, n_lobes_all_sig, n_stacked] = ...
+                sort_areas(options_main, regions, jaccard_dist, n_lobes_face, n_lobes_shared, n_lobes_not, n_lobes_all, n_lobes_all_sig);
+
+            %% Plots
+            file_ratio_conditions = sprintf('%s/ratio_conditions_%s_%s.png', out_dir, options_main.band_select{b}, options_main.atlas);
+
+            if strcmp(options_main.atlas, 'lobes')
+                
+                plot_violin_specificity(options_main, jaccard_dist, regions, patients, file_ratio_conditions)
+
             elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
                 
-                [~, idx_sort] = sort(n_lobes_all_sig./n_lobes_all, 'descend');
-            
-            end
-            
-            n_lobes_all_sig = n_lobes_all_sig(idx_sort);
-            n_lobes_all = n_lobes_all(idx_sort);
-
-            regions = regions(idx_sort);
-            
-            n_stacked = n_stacked(idx_sort, :);
-            
-            %% Sum of electrodes in each ROI
-            file_ratio_total = sprintf('%s/ratio_total_%s_%s.png', out_dir, options.band_select{b}, options_main.atlas);
-            
-            % Compute standard error of the proportions
-            prop_total = n_lobes_all_sig./n_lobes_all;
-            se_prop = sqrt((prop_total .* (1-prop_total)) ./ n_lobes_all);
-            
-            if exist(file_ratio_total, 'file') == 0
+                %% Ratio of responsive channels for each condtion 
+                plot_ratio_bar(n_stacked, n_lobes_all_sig, regions, options_main.bar_colors, {'Faces', 'Both', 'Non-Faces'}, ...
+                    file_ratio_conditions)
                 
-                % Add number of electrodes to labels
-                for r = 1:length(regions)
-                    region_labels{r} = sprintf('N = %i', n_lobes_all(r));
-                end
-                
-                if strcmp(options_main.atlas, 'lobes')
-                    
-                    figure('Position', [406,373,587,550])
-                    hold on
+                %% Total number of responsive channels
+                file_ratio_total = sprintf('%s/ratio_total_%s_%s.png', out_dir, options.band_select{b}, options_main.atlas);
+                plot_total_bar(n_lobes_all_sig, n_lobes_all, regions, file_ratio_total)
 
-                    % Plot colors corresponding to brain areas
-                    for r = 1:length(regions)
-                        rectangle('Position', [r-0.5 0 1 0.9], 'FaceColor', [options_main.region_color(r, :), options_main.region_alpha], ...
-                            'EdgeColor', [options_main.region_color(r, :), options_main.region_alpha])
-                    end
-
-                    ylim([0 0.9])
-                    
-                elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
-                    
-                    fig = figure('Position', [1981,181,1540,400]);
-                    set(fig,'defaultAxesColorOrder',[[0 0 0]; [0 0 0]]);
-                    hold on
-                    
-                    y_ticks_man = [0 0.33 0.66 1];
-                    
-                    for i = 2:length(y_ticks_man)
-                        plot([0 length(regions)+1], y_ticks_man(i)*ones(2,1), '--', 'LineWidth', 0.1, 'Color', [0.3 0.3 0.3], 'HandleVisibility','off')
-                    end
-                    
-                    ylim([0 1.1])
-
-                end
-                           
-                bar_total = bar(prop_total, 0.5, 'FaceColor', [0.5 0.5 0.5]);
-
-                % Plot the errors
-                eb_face = errorbar(bar_total.XEndPoints, bar_total.YEndPoints, 1.96*se_prop(:,1), 1.96*se_prop(:,1));    
-                eb_face.Color = [0 0 0];                            
-                eb_face.LineStyle = 'none'; 
-                eb_face.LineWidth = 1.5;
-
-                xticks(1:size(n_stacked,1))
-                xticklabels(region_labels)
-
-                set(gca, 'FontSize', 22)
-                
-                if strcmp(options_main.atlas, 'lobes')
-                    
-                    xtickangle(45)
-
-                elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
-                    
-                    xtickangle(90)
-                    yticks([])
-                    y_limits = ylim;
-                    
-                    yyaxis right
-                    
-                    k = range(ylim)/range(y_limits);
-                    d = -y_limits(1) * k;
-                    
-                    yticks(y_ticks_man * k + d);                    
-                    yticklabels({'0', '0.33', '0.66', '1'})
-                    ytickangle(135)
-                    
-                end
-
-                ylabel('Fraction of Channels')
-
-                saveas(gca, file_ratio_total)
-                
-            end
-
-            %% Ratio of different groups 
-            file_ratio_conditions = sprintf('%s/ratio_conditions_%s_%s.png', out_dir, options.band_select{b}, options_main.atlas);
-            
-            % Compute standard error of the proportion
-            prop = n_stacked./sum(n_stacked,2);
-            se_prop = sqrt((prop .* (1-prop)) ./ n_lobes_all_sig);
-            
-            if exist(file_ratio_conditions, 'file') == 0
-                
-                % Add number of electrodes to labels
-                for r = 1:length(regions)
-                    region_labels{r} = sprintf('%s (N = %i)', regions{r}, n_lobes_all_sig(r));
-                end
-                
-                if strcmp(options_main.atlas, 'lobes')
-                    
-                    figure('Position', [993,373,656,550])
-                    hold on 
-
-                    % Plot colors corresponding to brain areas
-                    for r = 1:length(regions)
-                        rectangle('Position', [r-0.5 0 1 1], 'FaceColor', [options_main.region_color(r, :), options_main.region_alpha], ...
-                            'EdgeColor', [options_main.region_color(r, :), options_main.region_alpha])
-                    end
-
-                elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
-
-                    fig = figure('Position', [1981,181,1540,808]);
-                    set(fig,'defaultAxesColorOrder',[[0 0 0]; [0 0 0]]);
-                    hold on
-                    
-                    y_ticks_man = [0 0.25 0.5 0.75 1];
-                    
-                    for i = 2:length(y_ticks_man)
-                        plot([0 length(regions)+1], y_ticks_man(i)*ones(2,1), '--', 'LineWidth', 0.1, 'Color', [0.3 0.3 0.3], 'HandleVisibility','off')
-                    end
-
-                end
-                
-                bar_condition = bar(prop, 0.5, 'stacked', 'FaceColor', 'flat');
-
-                % Plot the errors
-                eb_face = errorbar(bar_condition(1).XEndPoints, bar_condition(1).YEndPoints, 1.96*se_prop(:,1), 1.96*se_prop(:,1));    
-                eb_face.Color = [0 0 0];                            
-                eb_face.LineStyle = 'none'; 
-                eb_face.LineWidth = 1.5;
-
-                eb_non = errorbar(bar_condition(2).XEndPoints, bar_condition(2).YEndPoints, 1.96*se_prop(:,3), 1.96*se_prop(:,3));    
-                eb_non.Color = [1 1 1];                            
-                eb_non.LineStyle = 'none'; 
-                eb_non.LineWidth = 1.5;
-
-                xticks(1:size(n_stacked,1))
-                xticklabels(region_labels)
-
-                bar_condition(1).CData = [0.15 0.8 1];
-                bar_condition(2).CData = [0.075 0.4 0.65];
-                bar_condition(3).CData = [0 0 0.3];
-
-                set(gca, 'FontSize', 22)
-                
-                if strcmp(options_main.atlas, 'lobes')
-
-                    xtickangle(45)
-                    
-                    outer_pos = get(gca, 'OuterPosition');
-                    outer_pos(2) = 0.1;
-                    outer_pos(4) = 0.9;
-                    set(gca, 'OuterPosition', outer_pos)
-
-                    legend({'Faces', 'Both', 'Non-faces'}, 'Position', [0.668,0.024,0.314,0.155])
-
-                elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
-
-                    xtickangle(90)
-                    yticks([])
-                    y_limits = ylim;
-                    
-                    yyaxis right
-                    
-                    k = range(ylim)/range(y_limits);
-                    d = -y_limits(1) * k;
-                    
-                    yticks(y_ticks_man * k + d);                    
-                    yticklabels({'0', '0.25', '0.5', '0.75', '1'})
-                    ytickangle(135)
-                    
-                    legend({'Faces', 'Both', 'Non-faces'}, 'Position', [0.025, 0.02, 0.108, 0.105])
-                
-                end
-                
-                ylabel('Fraction of Channels')
-
-                saveas(gca, file_ratio_conditions)
-                
             end
 
             %% Plot resonsive electrodes in each condition
@@ -364,7 +161,7 @@ function plot_saccades_faces(options)
             idx_condition(idx_not == 1) = 3;
 
             close all
-            color_map = [0.15 0.8 1; 0.075 0.4 0.65; 0 0 0.3]; 
+            color_map = options_main.bar_colors; 
     
             % Spatial plot settings 
             options.fig_features.out_dir = out_dir;

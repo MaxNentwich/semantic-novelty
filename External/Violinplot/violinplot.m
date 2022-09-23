@@ -154,13 +154,22 @@ elseif isnumeric(data) % numeric input
         
         catnames = (unique(cats)); % this ignores categories without any data
         catnames_labels = {};
+        
+        % postion where violins are plotted
+        idx_group_pos = find(cellfun(@(C) strcmp(C, 'GroupPos'), varargin)) + 1;
+        if ~isempty(idx_group_pos)
+            group_pos = varargin{idx_group_pos};
+        else
+            group_pos = 1:length(catnames);
+        end
+        
         for n = 1:length(catnames)
             thisCat = catnames(n);
             catnames_labels{n} = char(thisCat);
             thisData = data(cats == thisCat);
-            violins(n) = Violin({thisData}, n, varargin{:});
+            violins(n) = Violin({thisData}, group_pos(n), varargin{:});
         end
-        set(gca, 'XTick', 1:length(catnames), 'XTickLabels', catnames_labels);
+        set(gca, 'XTick', group_pos, 'XTickLabels', catnames_labels);
         set(gca,'Box','on');
         return
     else

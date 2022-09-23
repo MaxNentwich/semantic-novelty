@@ -115,57 +115,51 @@ function plot_motion_saccades_cuts(options_main)
                 
             end
             
-            %% Bar plot to summarize ratio of responsive electrodes per area
-            % Find shared an unique electrodes
+            %% Find electrodes in each area for each patient
             labels_all_sig = unique([labels_flow; labels_scenes; labels_saccades]);
-
-            loc_all = localize_elecs_bipolar(labels_all, options_main.atlas); 
             
-            loc_all_sig = localize_elecs_bipolar(labels_all_sig, options_main.atlas);
-            loc_flow = localize_elecs_bipolar(labels_flow, options_main.atlas);
-            loc_scenes = localize_elecs_bipolar(labels_scenes, options_main.atlas);
-            loc_saccades = localize_elecs_bipolar(labels_saccades, options_main.atlas);
+            [n_lobes_all, ~, n_lobes_flow, n_lobes_scenes, n_lobes_saccades, regions, patients, loc_all] = ...
+                localize_elecs_patient(labels_all, labels_all_sig, labels_flow, labels_scenes, labels_saccades, options_main.atlas);
 
-            regions = unique(loc_all_sig);
-
-            % Count the number of electrodes in each lobe
-            n_lobes_all_sig = zeros(size(regions));
-            n_lobes_all = zeros(size(regions));
-            n_lobes_flow = zeros(size(regions));
-            n_lobes_scenes = zeros(size(regions));
-            n_lobes_saccades = zeros(size(regions));
-
-            for l = 1:length(regions)
-
-                n_lobes_all_sig(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_all_sig(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_all_sig(:,2))],2)));
-                n_lobes_all(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_all(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_all(:,2))],2)));
-                n_lobes_flow(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_flow(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_flow(:,2))],2)));    
-                n_lobes_scenes(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_scenes(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_scenes(:,2))],2)));    
-                n_lobes_saccades(l) = round(sum(mean([cellfun(@(C) contains(C, regions{l}), loc_saccades(:,1)), ...
-                    cellfun(@(C) contains(C, regions{l}), loc_saccades(:,2))],2)));
-
-            end
-
-            %% Figures 
-            n_stacked = [n_lobes_scenes, n_lobes_saccades, n_lobes_flow]./n_lobes_all;
-
+            %% Stats
+            % Get the ratios of responsive channels
+            ratio_scenes = n_lobes_scenes./n_lobes_all;
+            ratio_saccades = n_lobes_saccades./n_lobes_all;
+            ratio_flow = n_lobes_flow./n_lobes_all;
+            
             % Remove 'unkown' channels  
             if ~options_main.inlude_unknown
                 
                 idx_unknown = cellfun(@(C) strcmp(C, 'Unknown'), regions);
                 
-                n_lobes_all(idx_unknown) = [];
+                n_lobes_all(:, idx_unknown) = [];
+                n_lobes_scenes(:, idx_unknown) = [];
+                n_lobes_saccades(:, idx_unknown) = [];
+                n_lobes_flow(:, idx_unknown) = [];
+                
+                ratio_scenes(:, idx_unknown) = [];
+                ratio_saccades(:, idx_unknown) = [];
+                ratio_flow(:, idx_unknown) = [];
 
                 regions(idx_unknown) = [];
-                
-                n_stacked(idx_unknown, :) = [];
-            
+
             end
             
+            % Get p-values from paired tests
+            for i = 1:length(regions)     
+                p_sce_sac(i) = ranksum(ratio_scenes(:,i), ratio_saccades(:,i));
+                p_sce_flo(i) = ranksum(ratio_scenes(:,i), ratio_flow(:,i));
+                p_sac_flo(i) = ranksum(ratio_saccades(:,i), ratio_flow(:,i));           
+            end
+                       
+            % FDR correction only for comparison between stimuli in each
+            % region 
+            p_fdr = mafdr([p_sce_sac, p_sce_flo, p_sac_flo], 'BHFDR', 'true');
+            p_sce_sac = p_fdr(1:length(regions));
+            p_sce_flo = p_fdr(length(regions)+1:2*length(regions));
+            p_sac_flo = p_fdr(2*length(regions)+1:end);
+            
+            %% Sort by region
             if strcmp(options_main.atlas, 'lobes')
             
                 idx_sort = cellfun(@(C) find(ismember(regions, C)), options_main.regions_order, 'UniformOutput', false);
@@ -174,45 +168,97 @@ function plot_motion_saccades_cuts(options_main)
         
             elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
                 
+                % Create a matrix with all counts 
+                n_stacked = [round(sum(n_lobes_scenes)); round(sum(n_lobes_saccades)); round(sum(n_lobes_flow))]' ./ round(sum(n_lobes_all))'; 
+                se_stacked = sqrt((n_stacked .* (1-n_stacked)) ./ round(sum(n_lobes_all))');
+
                 [~, idx_sort] = sort(n_stacked(:,1), 'descend');
+            
+                n_stacked = n_stacked(idx_sort, :);
+                se_stacked = se_stacked(idx_sort, :);
             
             end
             
-            n_lobes_all = n_lobes_all(idx_sort);
+            n_lobes_all = n_lobes_all(:, idx_sort);
+            n_lobes_all = round(sum(n_lobes_all));
 
             regions = regions(idx_sort);
+ 
+            p_sce_sac = p_sce_sac(idx_sort);
+            p_sce_flo = p_sce_flo(idx_sort);
+            p_sac_flo = p_sac_flo(idx_sort);
             
-            n_stacked = n_stacked(idx_sort, :);
+            ratio_scenes = ratio_scenes(:, idx_sort);
+            ratio_saccades = ratio_saccades(:, idx_sort);
+            ratio_flow = ratio_flow(:, idx_sort);
             
-            %% Ratio of different groups 
+            %% Plot the ratio of responsive channels 
             file_ratio_conditions = sprintf('%s/ratio_conditions_%s_%s.png', out_dir, options_main.band_select{b}, options_main.atlas);
 
-            % Compute the standard error of the proportions 
-            se_prop = sqrt((n_stacked .* (1-n_stacked)) ./ n_lobes_all);
-            se_prop = se_prop(:);
-            
             if exist(file_ratio_conditions, 'file') == 0
                      
-                % Add number of electrodes to labels
-                for r = 1:length(regions)
-                    region_labels{r} = sprintf('%s (N = %i)', regions{r}, n_lobes_all(r));
-                end
-
                 if strcmp(options_main.atlas, 'lobes')
                     
-                    figure('Position', [675,483,650,650])
+                    condition_pos = 0.22;
+                    
+                    figure('Position', [1204,331,476,540])
                     hold on
                     
                     % Plot colors corresponding to brain areas
                     for r = 1:length(regions)
-                        rectangle('Position', [r-0.5 0 1 1], 'FaceColor', [options_main.region_color(r, :), options_main.region_alpha], ...
+                        rectangle('Position', [r-0.5 0 1 1.3], 'FaceColor', [options_main.region_color(r, :), options_main.region_alpha], ...
                             'EdgeColor', [options_main.region_color(r, :), options_main.region_alpha])
                     end
                     
-                    bar_condition = bar(n_stacked, 'FaceColor', 'flat');
+                    % Ratios for individual patients
+                    for r = 1:length(regions)
+
+                        center_pos = [-condition_pos, 0, condition_pos] + r;
+
+                        scatter(0.025*randn(length(patients),1) + center_pos(1), ratio_scenes(:,r), 10, 'g', 'filled')
+                        plot([center_pos(1)-(condition_pos/2), center_pos(1)+(condition_pos/2)], nanmedian(ratio_scenes(:,r))*[1 1], ...
+                            'Color', [0.5, 0.5, 0.5], 'LineWidth', 2, 'HandleVisibility','off')
+
+                        scatter(0.025*randn(length(patients),1) + center_pos(2), ratio_saccades(:,r), 10, 'b', 'filled')
+                        plot([center_pos(2)-(condition_pos/2), center_pos(2)+(condition_pos/2)], nanmedian(ratio_saccades(:,r))*[1 1], ...
+                            'Color', [0.5, 0.5, 0.5], 'LineWidth', 2, 'HandleVisibility','off')
+
+                        scatter(0.025*randn(length(patients),1) + center_pos(3), ratio_flow(:,r), 10, 'r', 'filled')
+                        plot([center_pos(3)-(condition_pos/2), center_pos(3)+(condition_pos/2)], nanmedian(ratio_flow(:,r))*[1 1], ...
+                            'Color', [0.5, 0.5, 0.5], 'LineWidth', 2, 'HandleVisibility','off')
+
+                        % Plot significant differences between stimuli
+                        plot_sig_bars(p_sce_sac(r), [center_pos(1), center_pos(2)], 1.05, 0.06, 0.0375)
+                        plot_sig_bars(p_sce_flo(r), [center_pos(1), center_pos(3)], 1.2, 0.06, 0.0375)
+                        plot_sig_bars(p_sac_flo(r), [center_pos(2), center_pos(3)], 1.125, 0.06, 0.0375) 
+
+                    end
+                    
+                    xtickangle(45)
+                    
+                    outer_pos = get(gca, 'OuterPosition');
+                    outer_pos(2) = 0.15;
+                    outer_pos(4) = 0.85;
+                    set(gca, 'OuterPosition', outer_pos)
+                    
+                    legend({'Film Cuts', 'Saccades', 'Motion'}, 'Position', [0.55,0.01,0.43,0.19])
+                
+                    ylim([0 1.3])
+                    xlim([0.5, 6.5])
+                    
+                    xticks(1:length(regions))
+                    xticklabels(regions)
                 
                 elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
                     
+                    se_prop = se_stacked(:);
+                    
+                    % Add number of electrodes to labels
+                    region_labels = cell(1, length(regions));
+                    for r = 1:length(regions)
+                        region_labels{r} = sprintf('%s (N = %i)', regions{r}, n_lobes_all(r));
+                    end
+
                     fig = figure('units', 'normalized', 'Position', [0 0 1 1]);
                     set(fig,'defaultAxesColorOrder',[[0 0 0]; [0 0 0]]);
                     hold on
@@ -225,41 +271,17 @@ function plot_motion_saccades_cuts(options_main)
                     
                     bar_condition = bar(n_stacked, 1.2, 'FaceColor', 'flat');
                     
-                end
-   
-                % Plot the errors
-                eb = errorbar([bar_condition.XEndPoints], [bar_condition.YData], 1.96*se_prop, 1.96*se_prop);    
-                eb.Color = [0 0 0];                            
-                eb.LineStyle = 'none'; 
-                eb.LineWidth = 1.5;
-                
-                bar_condition(1).CData = options_main.color_scenes;
-                bar_condition(2).CData = options_main.color_saccades;
-                bar_condition(3).CData = options_main.color_flow;
-                
-                xticks(1:size(n_stacked,1))
-                xticklabels(region_labels)
+                    % Plot the errors
+                    eb = errorbar([bar_condition.XEndPoints], [bar_condition.YData], 1.96*se_prop, 1.96*se_prop);    
+                    eb.Color = [0 0 0];                            
+                    eb.LineStyle = 'none'; 
+                    eb.LineWidth = 1.5;
 
-                if strcmp(options_main.atlas, 'AparcAseg_Atlas')
+                    bar_condition(1).CData = options_main.color_scenes;
+                    bar_condition(2).CData = options_main.color_saccades;
+                    bar_condition(3).CData = options_main.color_flow;
+                    
                     ylim([-0.21 1.2])
-                end
-                
-                set(gca, 'FontSize', 22)
-                
-                if strcmp(options_main.atlas, 'lobes')
-                    
-                    xtickangle(45)
-                    
-                    outer_pos = get(gca, 'OuterPosition');
-                    outer_pos(2) = 0.1;
-                    outer_pos(4) = 0.9;
-                    set(gca, 'OuterPosition', outer_pos)
-                    
-                    legend({'Film Cuts', 'Saccades', 'Motion'}, 'Position', [0.64, 0.131, 0.308, 0.155])
-                
-%                     grid minor
-                    
-                elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
                     
                     xtickangle(90)
                     yticks([])
@@ -275,11 +297,15 @@ function plot_motion_saccades_cuts(options_main)
                     ytickangle(135)
                     
                     legend({'Film Cuts', 'Saccades', 'Motion'}, 'Position', [0.03, 0.079, 0.05, 0.105])
-
+                    
+                    xticks(1:size(n_stacked,1))
+                    xticklabels(region_labels)
+                    
                 end
                 
                 ylabel('Fraction of Channels')
-
+                set(gca, 'FontSize', 22)
+                
                 saveas(gca, file_ratio_conditions)
                 
             end

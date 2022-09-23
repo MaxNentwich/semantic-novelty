@@ -540,6 +540,7 @@ classdef Violin < handle
             p.addParameter('ShowBox', true, isscalarlogical);
             p.addParameter('ShowMedian', true, isscalarlogical);
             p.addParameter('ShowWhiskers', true, isscalarlogical);
+            p.addParameter('GroupPos', @(x)isnumeric(vertcat(x{:})));
             p.parse(data, pos, varargin{:});
             results = p.Results;
         end
