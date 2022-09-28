@@ -114,4 +114,6 @@ Relevant scripts from external packages are included in 'External'. The full pac
 
 - Computational Brain Imaging Group (CBIG) repository for clustering. Download [here](https://github.com/ThomasYeoLab/CBIG) (accessed 08/04/2022)
 
+- Skillings-Mack test, a nonparametric Two-way ANOVA with unbalanced observations. Download [here](https://github.com/thomaspingel/mackskill-matlab) (accessed 09/28/2022)
+
 The system identification is based on the mTRF Toolbox. Download [here](https://github.com/mickcrosse/mTRF-Toolbox) (accessed 08/04/2022) 
