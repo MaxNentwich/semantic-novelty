@@ -26,7 +26,7 @@ options.stim_select = {'optical_flow', 'scenes', 'saccades'};                   
                 
 options.vid_names = {'Monkey', 'Despicable_Me_English', ...                         % Videos {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'}
     'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
-
+                                              
 %% Directories 
 options.local_dir = '/home/max/Documents/Dropbox (City College)';                       % Path to local drive
 options.drive_dir = '/media/max/9C52B2EB52B2C972/ieeg_plot';                            % Path to raw data on hard drive
@@ -349,9 +349,9 @@ if options.process_plots
         options.atlas = 'AparcAseg_Atlas';                                                      % Figure S4C
         plot_motion_saccades_cuts(options)
         
-        estimate_filter_amplitude(options, 'scenes', 'Event - Continuous', 0.1)                 % Figure 3A
+        estimate_filter_amplitude(options, 'scenes', 'Event - Continuous', 0.075)               % Figure 3A
         estimate_filter_amplitude(options, 'saccades_novelty', 'High - Low Novelty', 0.02)      % Figure 4A
-        estimate_filter_amplitude(options, 'saccades_faces', 'Faces - Non-Faces', 0.05)         % Figure 5A
+        estimate_filter_amplitude(options, 'saccades_faces', 'Faces - Non-Faces', 0.04)         % Figure 5A
 
     end
 

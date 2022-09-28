@@ -1,6 +1,6 @@
 
-function [regions, jaccard_dist, n_lobes_all, n_lobes_all_sig, n_stacked] = ...
-    sort_areas(options_main, regions, jaccard_dist, n_lobes_c1, n_lobes_c2, n_lobes_c3, n_lobes_all, n_lobes_all_sig)
+function [regions, jaccard_dist, jaccard_shuff_median, n_lobes_all, n_lobes_all_sig, n_stacked] = ...
+    sort_areas(options_main, regions, jaccard_dist, jaccard_shuff_median, n_lobes_c1, n_lobes_c2, n_lobes_c3, n_lobes_all, n_lobes_all_sig)
 
     if strcmp(options_main.atlas, 'lobes')
 
@@ -23,6 +23,7 @@ function [regions, jaccard_dist, n_lobes_all, n_lobes_all_sig, n_stacked] = ...
 
     regions = regions(idx_sort);
     jaccard_dist = jaccard_dist(:, idx_sort);
+    jaccard_shuff_median = jaccard_shuff_median(:, idx_sort);
 
     n_lobes_all_sig = n_lobes_all_sig(:, idx_sort);
     n_lobes_all_sig = round(sum(n_lobes_all_sig));

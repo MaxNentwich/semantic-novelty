@@ -1,19 +1,22 @@
 % Plot distibution and Gaussian fit        
 
-function plot_distribution(x)
+function [x, log_transform] = plot_distribution(x, dist_file)
 
-    x(isnan(x)) = [];
-    x(isinf(x)) = [];
-    
-    mu = nanmean(x);
-    sigma = nanstd(x);
+    plot_distro(x)
 
-    x_bins = linspace(min(x), max(x), 1000);
-    f = 1/(sigma*sqrt(2*pi)) * exp(-0.5 * ((x_bins-mu)/sigma).^2);
+    log_transform = input('Apply log transformation? (yes=1, no=0) \n');
 
-    figure
-    hold on
-    histogram(x, 'Normalization', 'pdf')
-    plot(x_bins, f)
+    if log_transform 
+
+        x = log(x + 1);
+        plot_distro(x)
+
+    end
+
+    xlabel('Amplitude Difference')
+    ylabel('Normalized Count')
+    legend({'Data', 'Gaussian Fit'})
+
+    saveas(gca, dist_file)
 
 end

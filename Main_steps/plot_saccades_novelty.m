@@ -82,28 +82,45 @@ function plot_saccades_novelty(options)
                      
             %% Stats
             jaccard_dist = 1 - (n_lobes_shared ./ sum(cat(3, n_lobes_high, n_lobes_low, n_lobes_shared), 3));
+
+            if strcmp(options_main.atlas, 'lobes')
+                
+                shuffle_file = sprintf('%s/saccade_novelty_shuffle.mat', data_dir);
+                
+                if exist(shuffle_file, 'file') == 0
+                    jaccard_shuff_median = specificity_permutation(labels_all_sig, options_main.atlas, 1e3);
+                    save(shuffle_file, 'jaccard_shuff_median')
+                else
+                    load(shuffle_file, 'jaccard_shuff_median')
+                end
+                
+            else
+                jaccard_shuff_median = zeros(size(jaccard_dist));
+            end
             
-            [regions, jaccard_dist, n_lobes_all_sig, n_lobes_high, n_lobes_shared, n_lobes_low, n_lobes_all] = ...
-                remove_areas(options_main, regions, jaccard_dist, n_lobes_all_sig, n_lobes_high, n_lobes_shared, n_lobes_low, n_lobes_all);
+            [regions, jaccard_dist, jaccard_shuff_median, n_lobes_all_sig, n_lobes_high, n_lobes_shared, n_lobes_low, n_lobes_all] = ...
+                remove_areas(options_main, regions, jaccard_dist, jaccard_shuff_median, ...
+                n_lobes_all_sig, n_lobes_high, n_lobes_shared, n_lobes_low, n_lobes_all);
+            
+            % Sort areas 
+            [regions, jaccard_dist, jaccard_shuff_median, n_lobes_all, n_lobes_all_sig, n_stacked] = ...
+                sort_areas(options_main, regions, jaccard_dist, jaccard_shuff_median, ...
+                n_lobes_high, n_lobes_shared, n_lobes_low, n_lobes_all, n_lobes_all_sig);
 
             if strcmp(options_main.atlas, 'lobes')
 
-                [p_sm, p_pair, median_dist, N] = compute_stats_specificity(jaccard_dist, regions);
+                [p_sm, p_pair, median_dist, N] = compute_stats_specificity(jaccard_dist, jaccard_shuff_median);
                 
                 save(sprintf('%s/saccade_novelty_stats.mat', data_dir), 'p_sm', 'p_pair', 'median_dist', 'N', 'regions')
             
             end
-
-            %% Sort areas 
-            [regions, jaccard_dist, n_lobes_all, n_lobes_all_sig, n_stacked] = ...
-                sort_areas(options_main, regions, jaccard_dist, n_lobes_high, n_lobes_shared, n_lobes_low, n_lobes_all, n_lobes_all_sig);
 
             %% Plots
             file_ratio_conditions = sprintf('%s/ratio_conditions_%s_%s.png', out_dir, options_main.band_select{b}, options_main.atlas);
 
             if strcmp(options_main.atlas, 'lobes')
                 
-                plot_violin_specificity(options_main, jaccard_dist, regions, patients, file_ratio_conditions)
+                plot_specificity(options_main, jaccard_dist, p_pair, regions, file_ratio_conditions)
 
             elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
                 

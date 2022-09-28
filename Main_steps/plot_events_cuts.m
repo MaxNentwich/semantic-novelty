@@ -37,11 +37,9 @@ function plot_events_cuts(options, out_dir_name, plot_filters)
             load(sprintf('%s/%s', options_main.stats_data, vid_file), 'w_all', 'sig_all', 'p_all', 'labels_all', 'options')
 
             %% Parse data for the different stimuli
-            %% Changed
             idx_events = find(ismember(options.stim_select, 'high_scenes'));
             idx_continuous = find(ismember(options.stim_select, 'low_scenes'));
-            %%
-            
+
             w_events = w_all{idx_events};
             w_continuous = w_all{idx_continuous};
 
@@ -49,10 +47,10 @@ function plot_events_cuts(options, out_dir_name, plot_filters)
             [~, sig_events] = fdr_corr(p_all{idx_events}, sig_all{idx_events});
             [~, sig_continuous] = fdr_corr(p_all{idx_continuous}, sig_all{idx_continuous});
 
-            %% Bar plot to summarize ratio of responsive electrodes per area
+            % Get labels in each condition
             labels_events = labels_all(sum(sig_events,2) ~= 0);
             labels_continuous = labels_all(sum(sig_continuous,2) ~= 0);
-            
+
             % Find shared an unique electrodes
             labels_all_sig = unique([labels_events; labels_continuous]);
 
@@ -60,36 +58,51 @@ function plot_events_cuts(options, out_dir_name, plot_filters)
             labels_events = labels_events(~ismember(labels_events, labels_shared));
             labels_continuous = labels_continuous(~ismember(labels_continuous, labels_shared));
 
-            % Localize electrodes
-            [n_lobes_all, n_lobes_all_sig, n_lobes_events, n_lobes_continuous, n_lobes_shared, regions, patients, loc_all] = ...
+            %% Localize electrodes
+            [n_lobes_all, n_lobes_all_sig, n_lobes_events, n_lobes_continuous, n_lobes_shared, regions, ~, loc_all] = ...
                 localize_elecs_patient(labels_all, labels_all_sig, labels_events, labels_continuous, labels_shared, options_main.atlas);
-                     
+ 
             %% Stats
             jaccard_dist = 1 - (n_lobes_shared ./ sum(cat(3, n_lobes_events, n_lobes_continuous, n_lobes_shared), 3));
             
-            [regions, jaccard_dist, n_lobes_all_sig, n_lobes_events, n_lobes_shared, n_lobes_continuous, n_lobes_all] = ...
-                remove_areas(options_main, regions, jaccard_dist, n_lobes_all_sig, n_lobes_events, n_lobes_shared, n_lobes_continuous, ...
-                n_lobes_all);
+            if strcmp(options_main.atlas, 'lobes')
+                
+                shuffle_file = sprintf('%s/%s_shuffle.mat', data_dir, out_dir_name);
+                
+                if exist(shuffle_file, 'file') == 0
+                    jaccard_shuff_median = specificity_permutation(labels_all_sig, options_main.atlas, 1e3);
+                    save(shuffle_file, 'jaccard_shuff_median')
+                else
+                    load(shuffle_file, 'jaccard_shuff_median')
+                end
+                
+            else
+                jaccard_shuff_median = zeros(size(jaccard_dist));
+            end
+            
+            [regions, jaccard_dist, jaccard_shuff_median, n_lobes_all_sig, n_lobes_events, n_lobes_shared, n_lobes_continuous, n_lobes_all] = ...
+                remove_areas(options_main, regions, jaccard_dist, jaccard_shuff_median, ...
+                n_lobes_all_sig, n_lobes_events, n_lobes_shared, n_lobes_continuous, n_lobes_all);
+            
+            % Sort areas 
+            [regions, jaccard_dist, jaccard_shuff_median, n_lobes_all, n_lobes_all_sig, n_stacked] = ...
+                sort_areas(options_main, regions, jaccard_dist, jaccard_shuff_median, ...
+                n_lobes_events, n_lobes_shared, n_lobes_continuous, n_lobes_all, n_lobes_all_sig);
 
             if strcmp(options_main.atlas, 'lobes')
 
-                [p_sm, p_pair, median_dist, N] = compute_stats_specificity(jaccard_dist, regions);
+                [p_sm, p_pair, median_dist, N] = compute_stats_specificity(jaccard_dist, jaccard_shuff_median);
                 
                 save(sprintf('%s/%s_stats.mat', data_dir, out_dir_name), 'p_sm', 'p_pair', 'median_dist', 'N', 'regions')
             
             end
-            
-            %% Sort areas 
-            [regions, jaccard_dist, n_lobes_all, n_lobes_all_sig, n_stacked] = ...
-                sort_areas(options_main, regions, jaccard_dist, n_lobes_events, n_lobes_shared, n_lobes_continuous, n_lobes_all, ...
-                n_lobes_all_sig);
 
             %% Plots
             file_ratio_conditions = sprintf('%s/ratio_conditions_%s_%s.png', out_dir, options_main.band_select{b}, options_main.atlas);
 
             if strcmp(options_main.atlas, 'lobes')
                 
-                plot_violin_specificity(options_main, jaccard_dist, regions, patients, file_ratio_conditions)
+                plot_specificity(options_main, jaccard_dist, p_pair, regions, file_ratio_conditions)
 
             elseif strcmp(options_main.atlas, 'AparcAseg_Atlas')
                 

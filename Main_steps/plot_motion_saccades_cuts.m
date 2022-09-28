@@ -199,14 +199,14 @@ function plot_motion_saccades_cuts(options_main)
                      
                 if strcmp(options_main.atlas, 'lobes')
                     
-                    condition_pos = 0.22;
+                    condition_pos = 0.25;
                     
-                    figure('Position', [1204,331,476,540])
+                    figure('Position', [1014,395,666,476])
                     hold on
                     
                     % Plot colors corresponding to brain areas
                     for r = 1:length(regions)
-                        rectangle('Position', [r-0.5 0 1 1.3], 'FaceColor', [options_main.region_color(r, :), options_main.region_alpha], ...
+                        rectangle('Position', [r-0.5 0 1 1], 'FaceColor', [options_main.region_color(r, :), options_main.region_alpha], ...
                             'EdgeColor', [options_main.region_color(r, :), options_main.region_alpha])
                     end
                     
@@ -217,20 +217,20 @@ function plot_motion_saccades_cuts(options_main)
 
                         scatter(0.025*randn(length(patients),1) + center_pos(1), ratio_scenes(:,r), 10, 'g', 'filled')
                         plot([center_pos(1)-(condition_pos/2), center_pos(1)+(condition_pos/2)], nanmedian(ratio_scenes(:,r))*[1 1], ...
-                            'Color', [0.5, 0.5, 0.5], 'LineWidth', 2, 'HandleVisibility','off')
+                            'k', 'LineWidth', 2, 'HandleVisibility','off')
 
                         scatter(0.025*randn(length(patients),1) + center_pos(2), ratio_saccades(:,r), 10, 'b', 'filled')
                         plot([center_pos(2)-(condition_pos/2), center_pos(2)+(condition_pos/2)], nanmedian(ratio_saccades(:,r))*[1 1], ...
-                            'Color', [0.5, 0.5, 0.5], 'LineWidth', 2, 'HandleVisibility','off')
+                            'k', 'LineWidth', 2, 'HandleVisibility','off')
 
                         scatter(0.025*randn(length(patients),1) + center_pos(3), ratio_flow(:,r), 10, 'r', 'filled')
                         plot([center_pos(3)-(condition_pos/2), center_pos(3)+(condition_pos/2)], nanmedian(ratio_flow(:,r))*[1 1], ...
-                            'Color', [0.5, 0.5, 0.5], 'LineWidth', 2, 'HandleVisibility','off')
+                            'k', 'LineWidth', 2, 'HandleVisibility','off')
 
                         % Plot significant differences between stimuli
-                        plot_sig_bars(p_sce_sac(r), [center_pos(1), center_pos(2)], 1.05, 0.06, 0.0375)
-                        plot_sig_bars(p_sce_flo(r), [center_pos(1), center_pos(3)], 1.2, 0.06, 0.0375)
-                        plot_sig_bars(p_sac_flo(r), [center_pos(2), center_pos(3)], 1.125, 0.06, 0.0375) 
+                        plot_sig_bars(p_sce_sac(r), [center_pos(1), center_pos(2)], 1.085, 0.015)
+                        plot_sig_bars(p_sce_flo(r), [center_pos(1), center_pos(3)], 1.13, 0.015)
+                        plot_sig_bars(p_sac_flo(r), [center_pos(2), center_pos(3)], 1.05, 0.015) 
 
                     end
                     
@@ -241,9 +241,9 @@ function plot_motion_saccades_cuts(options_main)
                     outer_pos(4) = 0.85;
                     set(gca, 'OuterPosition', outer_pos)
                     
-                    legend({'Film Cuts', 'Saccades', 'Motion'}, 'Position', [0.55,0.01,0.43,0.19])
+                    legend({'Film Cuts', 'Saccades', 'Motion'}, 'Position', [0.69,0.01,0.31,0.22])
                 
-                    ylim([0 1.3])
+                    ylim([0 1.15])
                     xlim([0.5, 6.5])
                     
                     xticks(1:length(regions))
@@ -304,7 +304,7 @@ function plot_motion_saccades_cuts(options_main)
                 end
                 
                 ylabel('Fraction of Channels')
-                set(gca, 'FontSize', 22)
+                set(gca, 'FontSize', 20)
                 
                 saveas(gca, file_ratio_conditions)
                 
