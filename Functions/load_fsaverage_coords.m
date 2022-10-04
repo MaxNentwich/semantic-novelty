@@ -1,4 +1,4 @@
-function [avg_coords, is_left, elec_names] = load_fsaverage_coords(labels)
+function [avg_coords, is_left, elec_names, elec_val] = load_fsaverage_coords(labels, labels_val)
 
     % Load the fsaverage coordinates
     load('movie_subs_table.mat', 'movie_subs_table')
@@ -6,6 +6,7 @@ function [avg_coords, is_left, elec_names] = load_fsaverage_coords(labels)
     is_left = [];
     avg_coords = [];
     elec_names = {};
+    elec_val = [];
 
     for l = 1:length(labels)
 
@@ -50,6 +51,7 @@ function [avg_coords, is_left, elec_names] = load_fsaverage_coords(labels)
             is_left = [is_left; cellfun(@(C) strcmp(C, 'L'), movie_subs_table.Hem(idx_sub))];
             avg_coords = [avg_coords; movie_subs_table.FSAverage(idx_sub, :)];
             elec_names = [elec_names; [patient, '_', electrode]];
+            elec_val = [elec_val; labels_val(l)];
             
         end
 

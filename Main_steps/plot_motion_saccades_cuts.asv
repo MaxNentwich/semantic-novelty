@@ -312,11 +312,26 @@ function plot_motion_saccades_cuts(options_main)
             
         end
         
+        %% Spatial plot with electrodes labeled by positive or negative responses
+        color_axis = [0, 0.5, 0; 0.5, 1, 0.5];
+        plot_elecs_response_direction(options_main, w_scenes, labels_scenes, labels_all, h, color_axis, 'scenes', b)
+        
+        color_axis = [0, 0, 0.5; 0.5, 0.5, 1];
+        plot_elecs_response_direction(options_main, w_saccades, labels_saccades, labels_all, h, color_axis, 'saccades', b)
+        
+        color_axis = [0.5, 0, 0; 1, 0.5, 0.5];
+        plot_elecs_response_direction(options_main, w_flow, labels_flow, labels_all, h, color_axis, 'motion', b)
+        
         %% Spatial plot with electrodes labeled by the amplitude of responses
         plot_elecs_response_amplitude(options_main, w_scenes, labels_scenes, labels_all, h, 'scenes', b)
         plot_elecs_response_amplitude(options_main, w_saccades, labels_saccades, labels_all, h, 'saccades', b)
         plot_elecs_response_amplitude(options_main, w_flow, labels_flow, labels_all, h, 'motion', b)
-
+        
+        %% Spatial plot of responsive electrodes only    
+        plot_elec_low_features(options_main, labels_flow, options_main.color_flow, 'motion', b)
+        plot_elec_low_features(options_main, labels_scenes, options_main.color_scenes, 'scenes', b)
+        plot_elec_low_features(options_main, labels_saccades, options_main.color_saccades, 'saccades', b)
+        
         % Channels with saccadic spike
         plot_elec_low_features(options_main, labels_spike, color_spike, 'saccadic_spike', b)
         
