@@ -93,18 +93,14 @@ function plot_elecs_response_amplitude(options, w_condition, labels_condition, l
         % Get the electrode location and assing colors to individual electrodes
         if strcmp(plot_type, 'amplitude')
             [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition, resp_amp);
-            c_lims = [-max(abs(resp_amp)), max(abs(resp_amp))];
         elseif strcmp(plot_type, 'onset')
             [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition, resp_onset);
-            c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
         elseif strcmp(plot_type, 'onset_positive')
             [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition(resp_amp > 0), ...
                 resp_onset(resp_amp > 0));
-            c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
         elseif strcmp(plot_type, 'onset_negative')
-            [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition(resp_amp < 0), ...
-                resp_onset(resp_amp < 0));
-            c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
+            [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition(resp_amp > 0), ...
+                resp_onset(resp_amp > 0));
         end
         
         % Scale the color values
@@ -121,7 +117,7 @@ function plot_elecs_response_amplitude(options, w_condition, labels_condition, l
 
         % Make the figure
         plot_sig_elecs(avg_coords, is_left, elec_names, col_plot_elec, options.fig_features, 1, color_axis, ...
-        c_lims)
+        [-max(abs(resp_elec)), max(abs(resp_elec))])
     
     end
     
