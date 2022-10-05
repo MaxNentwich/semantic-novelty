@@ -313,9 +313,9 @@ function plot_motion_saccades_cuts(options_main)
         end
         
         %% Spatial plot with electrodes labeled by the amplitude of responses
-        plot_elecs_response_amplitude(options_main, w_scenes, labels_scenes, labels_all, h, 'scenes', b)
-        plot_elecs_response_amplitude(options_main, w_saccades, labels_saccades, labels_all, h, 'saccades', b)
-        plot_elecs_response_amplitude(options_main, w_flow, labels_flow, labels_all, h, 'motion', b)
+        plot_elecs_response_amplitude(options_main, w_scenes, labels_scenes, labels_all, loc_all, h, 'scenes', b)
+        plot_elecs_response_amplitude(options_main, w_saccades, labels_saccades, labels_all, loc_all, h, 'saccades', b)
+        plot_elecs_response_amplitude(options_main, w_flow, labels_flow, labels_all, loc_all, h, 'motion', b)
 
         % Channels with saccadic spike
         plot_elec_low_features(options_main, labels_spike, color_spike, 'saccadic_spike', b)

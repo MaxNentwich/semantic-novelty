@@ -19,14 +19,15 @@ options.visualize_face_motion = false;                                          
 options.run_local = true;
 options.parallel_workers = 20;                                                  % Select how many cores to use on cluster
 
-%% Options for TRF analysis
+% Options for TRF analysis
 options.band_select = {'BHA'};                                                      % Frequency band {'raw', 'Theta', 'Alpha', 'Beta', 'BHA'}
 options.stim_labels = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli in the model {'optical_flow', 'face_motion', 'saccades', 'saccades_faces', 'saccades_matched', 'saccades_high_novelty', 'saccades_low_novelty', 'scenes', 'high_scenes', 'low_scenes'}
 options.stim_select = {'optical_flow', 'scenes', 'saccades'};                       % Stimuli to shuffle (selection of those in the model) 
                 
 options.vid_names = {'Monkey', 'Despicable_Me_English', ...                         % Videos {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'}
     'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
-                                              
+ 
+
 %% Directories 
 options.local_dir = '/home/max/Documents/Dropbox (City College)';                       % Path to local drive
 options.drive_dir = '/media/max/9C52B2EB52B2C972/ieeg_plot';                            % Path to raw data on hard drive

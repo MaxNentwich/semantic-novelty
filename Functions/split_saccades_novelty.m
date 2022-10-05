@@ -62,12 +62,22 @@ function [saccades_high_novelty, saccades_low_novelty] = split_saccades_novelty(
         
         figure
         hold on
-        scatter(X(idx_above,2), y(idx_above), 'r.')
-        scatter(X(~idx_above,2), y(~idx_above), 'b.')
-        plot(X(:,2), y_hat, '--')
+        scatter(X(idx_above,2), y(idx_above), 3, 'MarkerFaceColor','b','MarkerEdgeColor','b', ...
+            'MarkerFaceAlpha',.2, 'MarkerEdgeAlpha', 0)
+        scatter(X(~idx_above,2), y(~idx_above), 3, 'MarkerFaceColor','b','MarkerEdgeColor','b', ...
+            'MarkerFaceAlpha',.2, 'MarkerEdgeAlpha', 0)
+        plot(X(:,2), y_hat, 'Color', [1, 0 0], 'LineWidth', 1.5)
 
         xlabel('log saccade amplitude')
         ylabel('log feature distance')
+        
+        set(gca, 'FontSize', 20)
+        xlim([-1.2, 4])
+        ylim([-0.5, 3])
+        
+        grid on
+        
+        saveas(gca, sprintf('%s/saccades_novelty/examples/feature_split.png', options.fig_dir))
 
         figure
         hold on
@@ -82,7 +92,7 @@ function [saccades_high_novelty, saccades_low_novelty] = split_saccades_novelty(
         histogram(y(~idx_above), 100, 'FaceColor', 'b')
 
         xlabel('log feature distance')
-    
+
     end
     
     original_table(idx_remove, :) = [];

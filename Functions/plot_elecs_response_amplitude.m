@@ -1,5 +1,5 @@
         
-function plot_elecs_response_amplitude(options, w_condition, labels_condition, labels_all, h, feature_str, band_idx)
+function plot_elecs_response_amplitude(options, w_condition, labels_condition, labels_all, loc_all, h, feature_str, band_idx)
 
     % Overwrite the base filename
     options.fig_features.file_name = 'spatial_feature_comparison_amplitude';
@@ -7,6 +7,10 @@ function plot_elecs_response_amplitude(options, w_condition, labels_condition, l
     files = dir(options.fig_features.out_dir);
     idx_file = cellfun(@(C) contains(C, sprintf('%s_%s', options.fig_features.file_name, feature_str)), {files.name});
         
+    % Directory for counts of channels with postive or negative responses
+    data_dir = sprintf('%s/feature_response_amplitude', options.im_data_dir);
+    if exist(data_dir, 'dir') == 0, mkdir(data_dir), end
+    
     if sum(idx_file) == 0
 
         %% Determine whether response amplitudes are postivie or negative 
@@ -18,10 +22,32 @@ function plot_elecs_response_amplitude(options, w_condition, labels_condition, l
         % Get the amplitude at the extremum (positive or negative)
         resp_amp = w_scenes_sig(sub2ind(size(w_scenes_sig), [1:length(idx_max_scenes)]', idx_max_scenes));
 
-        % Overwrite the filename
-        options.fig_features.file_name = 'spatial_feature_comparison_amplitude';
+        %% Get the ratio of positive and negative responses overall and per brain area
+        % Find location for current condition 
+        loc_condition = loc_all(ismember(labels_all, labels_condition), :);
+        regions = unique(loc_condition);
+        
+        % Exclude unknown channels
+        if ~options.inlude_unknown, regions(ismember(regions, 'Unknown')) = []; end
+        
+        % Find the number of positve and negative responses in each region
+        n_pos = zeros(1, length(regions));
+        n_neg = zeros(1, length(regions));
+        n_all = zeros(1, length(regions));
+        
+        for r = 1:length(regions)
+            idx_region = sum(ismember(loc_condition, regions{r}), 2) >= options.loc_confidence;
+            n_pos(r) = sum(resp_amp(idx_region) > 0);
+            n_neg(r) = sum(resp_amp(idx_region) <= 0);
+            n_all(r) = length(resp_amp(idx_region));
+        end
+        
+        % Save the data
+        save(sprintf('%s/amplitude_%s_pos_neg.mat', data_dir, feature_str), 'n_pos', 'n_neg', 'n_all', 'regions', 'resp_amp')
 
         %% Make the figure
+        % Overwrite the filename
+        options.fig_features.file_name = 'spatial_feature_comparison_amplitude';
         
         % Get the electrode location and assing colors to individual electrodes
         [avg_coords, is_left, elec_names, resp_amp_elec] = load_fsaverage_coords(labels_condition, resp_amp);
@@ -34,6 +60,9 @@ function plot_elecs_response_amplitude(options, w_condition, labels_condition, l
         file_name_base = options.fig_features.file_name;
         options.fig_features.file_name = sprintf('%s_%s_%s_n_%i', ...
             file_name_base, feature_str, options.band_select{band_idx}, length(elec_names));
+        
+        % Edit electrode size
+        options.fig_features.elec_size = 14;
 
         % Make the figure
         plot_sig_elecs(avg_coords, is_left, elec_names, col_plot_elec, options.fig_features, 1, color_axis, ...
