@@ -80,7 +80,7 @@ function plot_sig_elecs(group_avg_coords, group_is_left, group_elec_names, r_plo
         set(favorite_kid, 'XTick', linspace(c_lims(1), c_lims(2), 5))
         set(favorite_kid, 'XTickLabel', strsplit(num2str(round(linspace(c_lims(1), c_lims(2), 5),2))))
         set(favorite_kid, 'XTickLabelRotation', 45)
-        set(favorite_kid, 'FontSize', 20)
+        set(favorite_kid, 'FontSize', 12)
     else
         kids = get(gcf, 'Children');
         favorite_kid = kids(1);
@@ -93,7 +93,7 @@ function plot_sig_elecs(group_avg_coords, group_is_left, group_elec_names, r_plo
 
         set(favorite_kid, 'XTick', linspace(c_lims(1), c_lims(2), 5))
         set(favorite_kid, 'XTickLabel', strsplit(num2str(round(linspace(c_lims(1), c_lims(2), 5),2))))
-        set(favorite_kid, 'FontSize', 20)
+        set(favorite_kid, 'FontSize', 12)
     end
 
     if exist(fig_options.out_dir, 'dir') == 0
