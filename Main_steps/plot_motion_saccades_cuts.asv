@@ -201,7 +201,7 @@ function plot_motion_saccades_cuts(options_main)
                     
                     condition_pos = 0.25;
                     
-                    figure('Position', [1014,395,666,476])
+                    figure('Position', [600,425,1025,434])
                     hold on
                     
                     % Plot colors corresponding to brain areas
@@ -215,15 +215,15 @@ function plot_motion_saccades_cuts(options_main)
 
                         center_pos = [-condition_pos, 0, condition_pos] + r;
 
-                        scatter(0.025*randn(length(patients),1) + center_pos(1), ratio_scenes(:,r), 10, 'g', 'filled')
+                        scatter(0.033*randn(length(patients),1) + center_pos(1), ratio_scenes(:,r), 20, 'g', 'filled')
                         plot([center_pos(1)-(condition_pos/2), center_pos(1)+(condition_pos/2)], nanmedian(ratio_scenes(:,r))*[1 1], ...
                             'k', 'LineWidth', 2, 'HandleVisibility','off')
 
-                        scatter(0.025*randn(length(patients),1) + center_pos(2), ratio_saccades(:,r), 10, 'b', 'filled')
+                        scatter(0.033*randn(length(patients),1) + center_pos(2), ratio_saccades(:,r), 20, 'b', 'filled')
                         plot([center_pos(2)-(condition_pos/2), center_pos(2)+(condition_pos/2)], nanmedian(ratio_saccades(:,r))*[1 1], ...
                             'k', 'LineWidth', 2, 'HandleVisibility','off')
 
-                        scatter(0.025*randn(length(patients),1) + center_pos(3), ratio_flow(:,r), 10, 'r', 'filled')
+                        scatter(0.033*randn(length(patients),1) + center_pos(3), ratio_flow(:,r), 20, 'r', 'filled')
                         plot([center_pos(3)-(condition_pos/2), center_pos(3)+(condition_pos/2)], nanmedian(ratio_flow(:,r))*[1 1], ...
                             'k', 'LineWidth', 2, 'HandleVisibility','off')
 
@@ -296,14 +296,14 @@ function plot_motion_saccades_cuts(options_main)
                     yticklabels({'0', '0.25', '0.5', '0.75', '1'})
                     ytickangle(135)
                     
-                    legend({'Film Cuts', 'Saccades', 'Motion'}, 'Position', [0.03, 0.079, 0.05, 0.105])
+                    legend({'Film Cuts', 'Saccades', 'Motion'}, 'Position', [0.85, 0.079, 0.12, 0.105])
                     
                     xticks(1:size(n_stacked,1))
                     xticklabels(region_labels)
                     
                 end
                 
-                ylabel('Fraction of Channels')
+                ylabel({'Fraction of'; 'Channels'})
                 set(gca, 'FontSize', 20)
                 
                 saveas(gca, file_ratio_conditions)
@@ -315,15 +315,25 @@ function plot_motion_saccades_cuts(options_main)
         %% Spatial plot with electrodes labeled by the amplitude of responses
         % Strength of responses
         plot_elecs_response_amplitude(options_main, w_scenes, labels_scenes, labels_all, loc_all, h, 'scenes', b, 'amplitude', 0)
-        plot_elecs_response_amplitude(options_main, w_saccades, labels_saccades, labels_all, loc_all, h, 'saccades', b, 'amplitude', 0)
+        plot_elecs_response_amplitude(options_main, w_saccades, labels_saccades, labels_all, loc_all, h, 'saccades', b, ...
+            'amplitude')
         plot_elecs_response_amplitude(options_main, w_flow, labels_flow, labels_all, loc_all, h, 'motion', b, 'amplitude', 0)
 
-        % Onset of responses
-        plot_elecs_response_amplitude(options_main, w_scenes, labels_scenes, labels_all, loc_all, h, 'scenes', b, 'onset', 0)
-        plot_elecs_response_amplitude(options_main, w_saccades, labels_saccades, labels_all, loc_all, h, 'saccades', b, 'onset', 0)
-        plot_elecs_response_amplitude(options_main, w_flow, labels_flow, labels_all, loc_all, h, 'motion', b, 'onset', 0)
-
-        plot_elecs_response_amplitude(options_main, w_scenes, labels_scenes, labels_all, loc_all, h, 'scenes', b, 'onset_positive', 0)
+        % Onset of responses for channels with increase in BHA
+        plot_elecs_response_amplitude(options_main, w_scenes, labels_scenes, labels_all, loc_all, h, 'scenes', b, ...
+            'onset_positive', 0, [-3, 3])
+        plot_elecs_response_amplitude(options_main, w_saccades, labels_saccades, labels_all, loc_all, h, 'saccades', b, ...
+            'onset_positive', 0, [-3, 3])
+        plot_elecs_response_amplitude(options_main, w_flow, labels_flow, labels_all, loc_all, h, 'motion', b, ...
+            'onset_positive', 0, [-3, 3])
+        
+        % Onset of responses for channels with decrease in BHA
+        plot_elecs_response_amplitude(options_main, w_scenes, labels_scenes, labels_all, loc_all, h, 'scenes', b, ...
+            'onset_negative', 0, [-3, 3])
+        plot_elecs_response_amplitude(options_main, w_saccades, labels_saccades, labels_all, loc_all, h, 'saccades', b, ...
+            'onset_negative', 0, [-3, 3])
+        plot_elecs_response_amplitude(options_main, w_flow, labels_flow, labels_all, loc_all, h, 'motion', b, ...
+            'onset_negative', 0, [-3, 3])
         
         % Channels with saccadic spike
         plot_elec_low_features(options_main, labels_spike, color_spike, 'saccadic_spike', b)

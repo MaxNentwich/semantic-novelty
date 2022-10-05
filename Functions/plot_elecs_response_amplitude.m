@@ -1,6 +1,6 @@
         
 function plot_elecs_response_amplitude(options, w_condition, labels_condition, labels_all, loc_all, h, feature_str, band_idx, ...
-    plot_type, visualize_fwhm)
+    plot_type, visualize_fwhm, varargin)
 
     % Overwrite the base filename
     options.fig_features.file_name = sprintf('spatial_feature_comparison_%s', plot_type);
@@ -93,24 +93,40 @@ function plot_elecs_response_amplitude(options, w_condition, labels_condition, l
         % Get the electrode location and assing colors to individual electrodes
         if strcmp(plot_type, 'amplitude')
             [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition, resp_amp);
-            c_lims = [-max(abs(resp_amp)), max(abs(resp_amp))];
+            if isempty(varargin)
+                c_lims = [-max(abs(resp_amp)), max(abs(resp_amp))];
+            else
+                c_lims = varargin{1};
+            end
         elseif strcmp(plot_type, 'onset')
             [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition, resp_onset);
-            c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
+            if isempty(varargin)
+                c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
+            else
+                c_lims = varargin{1};
+            end
         elseif strcmp(plot_type, 'onset_positive')
             [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition(resp_amp > 0), ...
                 resp_onset(resp_amp > 0));
-            c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
+            if isempty(varargin)
+                c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
+            else
+                c_lims = varargin{1};
+            end
         elseif strcmp(plot_type, 'onset_negative')
             [avg_coords, is_left, elec_names, resp_elec] = load_fsaverage_coords(labels_condition(resp_amp < 0), ...
                 resp_onset(resp_amp < 0));
-            c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
+            if isempty(varargin)
+                c_lims = [-max(abs(resp_onset)), max(abs(resp_onset))];
+            else
+                c_lims = varargin{1};
+            end
         end
         
         % Scale the color values
         color_axis = othercolor('BuDRd_18');
-        col_plot_elec = resp_elec / max(abs(resp_elec)) * (length(color_axis)/2) + (length(color_axis)/2);
-        
+        col_plot_elec = resp_elec / max(abs(c_lims)) * (length(color_axis)/2) + (length(color_axis)/2);
+   
         % Edit file name
         file_name_base = options.fig_features.file_name;
         options.fig_features.file_name = sprintf('%s_%s_%s_n_%i', ...
