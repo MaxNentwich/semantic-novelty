@@ -372,7 +372,7 @@ function plot_motion_saccades_cuts(options_main)
             
             colors_flow = [1 0.25 0.25; 0.75 0 0];
             plot_trf_comparison(w_flow, idx_flow, time, h, options_main.smoothing_L, amplitude_scale, n_ch_max, ...
-                trf_font, sprintf('%s/%s_flow_norm.png', filt_dir, regions{i}), colors_flow);
+                trf_font, sprintf('%s/%s_flow_norm.png', filt_dir, regions{i}), x_label_str, colors_flow);
             
             %%
             amplitude_scale = max([abs(smooth_elec(w_flow, idx_sce, h, options_main.smoothing_L))'; ...

@@ -1,5 +1,5 @@
   
-function plot_trf_comparison(w, idx_sig, time, h, L, amplitude_scale, n_ch_max, font_size, out_file, varargin)
+function plot_trf_comparison(w, idx_sig, time, h, L, amplitude_scale, n_ch_max, font_size, out_file, x_label_str, varargin)
 
     w_sig = smooth_elec(w, idx_sig, h, L);
 
@@ -35,12 +35,14 @@ function plot_trf_comparison(w, idx_sig, time, h, L, amplitude_scale, n_ch_max, 
     
     yticklabels([])
     
-    xlabel('Time [s]')
+    xlabel(x_label_str)
     
     ylim([-2 1])
     set(gcf, 'Position', [700,150,250,170])
     
-    saveas(gca, strrep(out_file, '_norm', '_cluster_avg'))
+    avg_file = strrep(out_file, '_norm', '_cluster_avg');
+    saveas(gca, avg_file)
+    saveas(gca, strrep(avg_file, '.png', '.fig'))
 
     %% All channels
     w_sig = zscore(w_sig(:, idx_sort));

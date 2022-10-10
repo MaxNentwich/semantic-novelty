@@ -172,7 +172,6 @@
 
             set(gca, 'FontSize', 22)
             
-            % Change labels back to seconds from log(s)
             xticklabels(cellfun(@(C) round(exp(str2double(C)), 2), xticklabels))
             xtickangle(45)
 

@@ -372,7 +372,7 @@ function plot_motion_saccades_cuts(options_main)
             
             colors_flow = [1 0.25 0.25; 0.75 0 0];
             plot_trf_comparison(w_flow, idx_flow, time, h, options_main.smoothing_L, amplitude_scale, n_ch_max, ...
-                trf_font, sprintf('%s/%s_flow_norm.png', filt_dir, regions{i}), colors_flow);
+                trf_font, sprintf('%s/%s_flow_norm.png', filt_dir, regions{i}), 'Time Lag from Motion [s]', colors_flow);
             
             %%
             amplitude_scale = max([abs(smooth_elec(w_flow, idx_sce, h, options_main.smoothing_L))'; ...
@@ -381,7 +381,7 @@ function plot_motion_saccades_cuts(options_main)
             
             colors_scenes = [0.25 1 0.25; 0 0.75 0];
             plot_trf_comparison(w_scenes, idx_sce, time, h, options_main.smoothing_L, amplitude_scale, n_ch_max, ...
-                trf_font, sprintf('%s/%s_cuts_norm.png', filt_dir, regions{i}), colors_scenes);
+                trf_font, sprintf('%s/%s_cuts_norm.png', filt_dir, regions{i}), 'Time from Film Cut [s]', colors_scenes);
             
             %%           
             amplitude_scale = max([abs(smooth_elec(w_flow, idx_sac, h, options_main.smoothing_L))'; ...
@@ -390,7 +390,7 @@ function plot_motion_saccades_cuts(options_main)
             
             colors_saccades = [0.25 0.25 1; 0 0 0.75];
             plot_trf_comparison(w_saccades, idx_sac, time, h, options_main.smoothing_L, amplitude_scale, n_ch_max, ...
-                trf_font, sprintf('%s/%s_saccades_norm.png', filt_dir, regions{i}), colors_saccades);
+                trf_font, sprintf('%s/%s_saccades_norm.png', filt_dir, regions{i}), 'Time from Saccade [s]', colors_saccades);
             
             pause(1)
             close all

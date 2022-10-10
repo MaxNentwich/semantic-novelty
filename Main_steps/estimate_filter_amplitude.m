@@ -274,7 +274,7 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
             F_anova_3_way = cell2mat(tbl_anova(2:4, idx_F));
             
             idx_df = ismember(tbl_anova(1,:), 'd.f.');
-            df_anova_3_way = cell2mat(tbl_anova(2:5, idx_df));
+            df_anova_3_way = cell2mat(tbl_anova(2:6, idx_df));
             
             %% Average difference of amplitudes in each region and patient 
             patients = unique(pat_names);
@@ -292,7 +292,7 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
             % ANOVA within each region 
             p_region = zeros(2, length(regions));
             F_region = zeros(2, length(regions));
-            df_region = zeros(3, length(regions));
+            df_region = zeros(4, length(regions));
             
             for r = 1:length(regions)      
                 
@@ -305,7 +305,7 @@ function estimate_filter_amplitude(options, stimulus, y_label_str, smooth_band_w
                 F_region(:,r) = cell2mat(tbl(2:3, idx_F));
                 
                 idx_df = ismember(tbl(1,:), 'd.f.');
-                df_region(:,r) = cell2mat(tbl(2:4, idx_df));
+                df_region(:,r) = cell2mat(tbl(2:5, idx_df));
                 
             end
             
