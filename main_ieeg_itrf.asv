@@ -355,7 +355,7 @@ if options.process_plots
 
     end
 
-    %% Plot comparison of event and continuous cuts (Figure 3C&D, Figure S9, Figure S11, Figure S12)
+    %% Plot comparison of event and continuous cuts (Figure 3C&D, Figure S9, Figure S11)
     if sum(ismember(options.stim_labels, options.stim_fig_3)) == length(options.stim_fig_3) ...
             && length(options.stim_labels) == length(options.stim_fig_3)
 
@@ -375,14 +375,14 @@ if options.process_plots
         elseif sum(ismember(options.vid_names, options.vid_fig_S8A)) == length(options.vid_fig_S8A) ...
             && length(options.vid_names) == length(options.vid_fig_S8A)
         
-            options.atlas = 'lobes';                                                                % Figure S10A
+            options.atlas = 'lobes';                                                                % Figure S8A
             options.include_insula = false;   
             plot_events_cuts(options, 'event_continuous_cuts_monkey', 0)
             
         elseif sum(ismember(options.vid_names, options.vid_fig_S8B)) == length(options.vid_fig_S8B) ...
             && length(options.vid_names) == length(options.vid_fig_S8B)
 
-            options.atlas = 'lobes';                                                                % Figure S10B
+            options.atlas = 'lobes';                                                                % Figure S8B
             options.include_insula = false;   
             plot_events_cuts(options, 'event_continuous_cuts_comics', 0)
             
@@ -394,28 +394,28 @@ if options.process_plots
     if sum(ismember(options.stim_labels, options.stim_fig_S7)) == length(options.stim_fig_S7) ...
             && length(options.stim_labels) == length(options.stim_fig_S7)
 
-        options.atlas = 'lobes';                                                                    % Figure S9B
+        options.atlas = 'lobes';                                                                    % Figure S7B
         options.include_insula = false; 
         plot_events_cuts(options, 'event_continuous_cuts_saccades_motion', 0)
         
     end
     
-    %% Plot the comparison of saccades with high and low novelty (Figure 4C&D, Figure S15, Figure S16)
+    %% Plot the comparison of saccades with high and low novelty (Figure 4C&D, Figure S13, Figure S14)
     if sum(ismember(options.stim_labels, options.stim_fig_4)) == length(options.stim_fig_4) ...
             && length(options.stim_labels) == length(options.stim_fig_4)
 
         options.include_insula = true;
         options.bar_colors = [0.15 0.8 1; 0.075 0.4 0.65; 0 0 0.3];
         
-        options.atlas = 'lobes';                                                                    % Figure 4C&D, Figure S15
+        options.atlas = 'lobes';                                                                    % Figure 4C&D, Figure S13
         plot_saccades_novelty(options)
         
-        options.atlas = 'AparcAseg_Atlas';                                                          % Figure S16
+        options.atlas = 'AparcAseg_Atlas';                                                          % Figure S14
         plot_saccades_novelty(options)
 
     end
 
-    %% Plot the comparison of saccades to faces and matched saccades (Figure 5C&D, Figure S18)
+    %% Plot the comparison of saccades to faces and matched saccades (Figure 5C&D, Figure S16)
     if sum(ismember(options.stim_labels, options.stim_fig_5)) == length(options.stim_fig_5) ...
             && length(options.stim_labels) == length(options.stim_fig_5)
 
@@ -425,23 +425,23 @@ if options.process_plots
         options.atlas = 'lobes';                                                                    % Figure 5C&D
         plot_saccades_faces(options)
         
-        options.atlas = 'AparcAseg_Atlas';                                                          % Figure S18
+        options.atlas = 'AparcAseg_Atlas';                                                          % Figure S16
         plot_saccades_faces(options)
 
     end
 
-    %% Plot the comparison of average optical flow and face motion (Figure S19B&C, Figure S20)
+    %% Plot the comparison of average optical flow and face motion (Figure S19B&C, Figure S17)
     if sum(ismember(options.stim_labels, options.stim_fig_6)) == length(options.stim_fig_6) ...
             && length(options.stim_labels) == length(options.stim_fig_6)
         
         options.include_insula = true;
         options.bar_colors = [1 0 0; 0.66 0 0; 0.33 0 0];
         
-        options.atlas = 'lobes';                                                                    % Figure S19B&C
+        options.atlas = 'lobes';                                                                    % Figure 6B&C
         
         plot_flow_face_motion(options)
         
-        options.atlas = 'AparcAseg_Atlas';                                                          % Figure S20
+        options.atlas = 'AparcAseg_Atlas';                                                          % Figure S17
         plot_flow_face_motion(options)
 
     end

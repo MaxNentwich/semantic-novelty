@@ -42,14 +42,6 @@ options.stim_select = {'saccades_faces', 'saccades_matched'};
 options.vid_names = {'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
 ```
 
-Figure 6:
-```
-options.band_select = {'BHA'};                                               
-options.stim_labels = {'optical_flow', 'face_motion', 'saccades', 'scenes'}; 
-options.stim_select = {'optical_flow', 'face_motion'};
-options.vid_names = {'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
-```
-
 Comparison in Figure S7:
 
 Panel A (same as Figure 3):
@@ -83,6 +75,14 @@ Panel B:
 options.band_select = {'BHA'};                                               
 options.stim_labels = {'high_scenes', 'low_scenes', 'saccades'};   
 options.stim_select = {'high_scenes', 'low_scenes'};                
+options.vid_names = {'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
+```
+
+Figure S19:
+```
+options.band_select = {'BHA'};                                               
+options.stim_labels = {'optical_flow', 'face_motion', 'saccades', 'scenes'}; 
+options.stim_select = {'optical_flow', 'face_motion'};
 options.vid_names = {'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
 ```
 
