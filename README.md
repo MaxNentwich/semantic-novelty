@@ -1,6 +1,8 @@
 # Semantic novelty modulates neural responses to visual change across the human brain
 Code to reproduce results in https://www.biorxiv.org/content/10.1101/2022.06.20.496467v1.full
 
+Associated data to reproduce figures and statistics is available at: https://osf.io/n6vpc/
+
 Analysis and figures can be reproduced by running [main_ieeg_itrf](main_ieeg_itrf.m).
 
 Set `options.local_dir` to the path containing all scripts.
@@ -42,7 +44,7 @@ options.stim_select = {'saccades_faces', 'saccades_matched'};
 options.vid_names = {'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
 ```
 
-Comparison in Figure S7:
+Comparison in Figure S9:
 
 Panel A (same as Figure 3):
 ```
@@ -60,7 +62,7 @@ options.stim_select = {'high_scenes', 'low_scenes'};
 options.vid_names = {'Monkey', 'Despicable_Me_English', 'Despicable_Me_Hungarian', 'The_Present_Rep_1', 'The_Present_Rep_2'};
 ```
 
-Comparison in Figure S8:
+Comparison in Figure S10:
 
 Panel A:
 ```
