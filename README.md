@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/521014367.svg)](https://zenodo.org/badge/latestdoi/521014367)
+
 # Semantic novelty modulates neural responses to visual change across the human brain
 Code to reproduce results in [https://doi.org/10.1101/2022.06.20.496467](https://doi.org/10.1101/2022.06.20.496467)
 
